@@ -14,6 +14,7 @@ import android.widget.LinearLayout;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.ActionBarDrawerToggle;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
@@ -23,147 +24,112 @@ import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
 
+import com.google.android.material.bottomappbar.BottomAppBar;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
+import com.google.android.material.navigation.NavigationBarView;
 import com.google.android.material.navigation.NavigationView;
 
-public class MainActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener, BottomNavigationView.OnNavigationItemSelectedListener {
+public class MainActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener {
     DrawerLayout drawerLayout;
+
     BottomNavigationView bottomNavigationView;
     FloatingActionButton fab;
 
+    Toolbar toolbar;
+    FragmentManager fragmentManager;
 
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
+    protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        Toolbar toolbar = findViewById(R.id.toolbar);
-        setSupportActionBar(toolbar);
-        drawerLayout = findViewById(R.id.drawer_layout);
-        NavigationView navigationView = findViewById(R.id.nav_view);
-        navigationView.setNavigationItemSelectedListener(this);
-
-        bottomNavigationView = findViewById(R.id.bottomNavigationView);
         fab = findViewById(R.id.fab);
+        toolbar = findViewById(R.id.toolbar);
+        setSupportActionBar(toolbar);
 
-        ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(this, drawerLayout, toolbar, R.string.open_nav, R.string.close_nav);
+        drawerLayout = findViewById(R.id.drawer_layout);
+        bottomNavigationView = findViewById(R.id.bottom_nevigation); // Initialize here
+
+        ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(this, drawerLayout, toolbar, R.string.open_nav,
+                R.string.close_nav);
         drawerLayout.addDrawerListener(toggle);
         toggle.syncState();
 
-        if (savedInstanceState == null) {
-            getSupportFragmentManager().beginTransaction().replace(R.id.frame_layout, new HomeFragment()).commit();
-            bottomNavigationView.setSelectedItemId(R.id.home);
-        }
-        replaceFragment(new HomeFragment());
+        NavigationView navigationView = findViewById(R.id.nav_view);
+        navigationView.setNavigationItemSelectedListener(this);
 
         bottomNavigationView.setBackground(null);
 
+        bottomNavigationView.setOnItemSelectedListener(new NavigationBarView.OnItemSelectedListener() {
+            @Override
+            public boolean onNavigationItemSelected(@NonNull MenuItem menuItem) {
+                int itemId = menuItem.getItemId();
+                if (itemId == R.id.home) {
+                    openFragment(new HomeFragment());
+                    return true;
+                } else if (itemId == R.id.report) {
+                    openFragment(new ReportFragment());
+                    return true;
+
+                } else if (itemId == R.id.bank) {
+                    openFragment(new BankFragment());
+                    return true;
+                } else if (itemId == R.id.profile) {
+                    openFragment(new ProfileFragment());
+                    return true;
+                }
+                return false;
+            }
+        });
+        fragmentManager = getSupportFragmentManager();
+        openFragment(new HomeFragment());
 
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
-            public void onClick(View view) {
-                showBottomDialog();
+            public void onClick(View v) {
+                Toast.makeText(MainActivity.this, "Upload Video", Toast.LENGTH_SHORT).show();
             }
         });
+
     }
 
 
-    private void showBottomDialog() {
 
-        final Dialog dialog = new Dialog(this);
-        dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
-        dialog.setContentView(R.layout.bottomsheetlayout);
 
-        LinearLayout videoLayout = dialog.findViewById(R.id.layoutVideo);
-        LinearLayout shortsLayout = dialog.findViewById(R.id.layoutShorts);
-        LinearLayout liveLayout = dialog.findViewById(R.id.layoutLive);
-
-        videoLayout.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-
-                dialog.dismiss();
-                Toast.makeText(MainActivity.this,"Upload a Video is clicked",Toast.LENGTH_SHORT).show();
-
-            }
-        });
-
-        shortsLayout.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-
-                dialog.dismiss();
-                Toast.makeText(MainActivity.this,"Create a short is Clicked",Toast.LENGTH_SHORT).show();
-
-            }
-        });
-
-        liveLayout.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-
-                dialog.dismiss();
-                Toast.makeText(MainActivity.this,"Go live is Clicked",Toast.LENGTH_SHORT).show();
-
-            }
-        });
-
-//        cancelButton.setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View view) {
-//                dialog.dismiss();
-//            }
-//        });
-
-        dialog.show();
-        dialog.getWindow().setLayout(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
-        dialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
-        dialog.getWindow().getAttributes().windowAnimations = R.style.DialogAnimation;
-        dialog.getWindow().setGravity(Gravity.BOTTOM);
-
-    }
-
-    private void replaceFragment(Fragment fragment) {
-        FragmentManager fragmentManager = getSupportFragmentManager();
-        FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
-        fragmentTransaction.replace(R.id.frame_layout, fragment);
-        fragmentTransaction.commit();
+    @Override
+    public boolean onNavigationItemSelected(@NonNull MenuItem item) {
+        int itemId = item.getItemId();
+        if (itemId == R.id.nav_expense) {
+            openFragment(new ExpenseFragment());
+        } else if (itemId == R.id.nav_budget) {
+            openFragment(new BudgetFragment());
+        } else if (itemId == R.id.nav_setting) {
+            openFragment(new SettingFragment());
+        } else if (itemId == R.id.nav_logout) {
+            startActivity(new Intent(MainActivity.this, LoginAccountActivity.class));
+        }
+        drawerLayout.closeDrawer(GravityCompat.START);
+        return true;
     }
 
     @Override
-    public boolean onNavigationItemSelected(@NonNull MenuItem menuItem) {
-        int id = menuItem.getItemId();
-
-        if (id == R.id.nave_expense) {
-            getSupportFragmentManager().beginTransaction().replace(R.id.frame_layout, new ExpenseFragment()).commit();
+    public void onBackPressed() {
+        if (drawerLayout.isDrawerOpen(GravityCompat.START)) {
             drawerLayout.closeDrawer(GravityCompat.START);
-            return true;
-        } else if (id == R.id.nav_budget) {
-            getSupportFragmentManager().beginTransaction().replace(R.id.frame_layout, new BudgetFragment()).commit();
-            drawerLayout.closeDrawer(GravityCompat.START);
-            return true;
-        } else if (id == R.id.nav_setting) {
-            getSupportFragmentManager().beginTransaction().replace(R.id.frame_layout, new SettingFragment()).commit();
-            drawerLayout.closeDrawer(GravityCompat.START);
-            return true;
-        } else if (id == R.id.nav_logout) {
-            startActivity(new Intent(MainActivity.this, RegisterAccountActivity.class));
-            return true;
-        } else if (id == R.id.home) {
-            getSupportFragmentManager().beginTransaction().replace(R.id.frame_layout, new HomeFragment()).commit();
-            return true;
-        } else if (id == R.id.report) {
-            getSupportFragmentManager().beginTransaction().replace(R.id.frame_layout, new ReportFragment()).commit();
-            return true;
-        } else if (id == R.id.bank) {
-            getSupportFragmentManager().beginTransaction().replace(R.id.frame_layout, new BankFragment()).commit();
-            return true;
-        } else if (id == R.id.profile) {
-            getSupportFragmentManager().beginTransaction().replace(R.id.frame_layout, new ProfileFragment()).commit();
-            return true;
         } else {
-            return false;
+            super.onBackPressed();
         }
     }
+    private void openFragment(Fragment fragment){
+        FragmentTransaction transaction = fragmentManager.beginTransaction();
+        transaction.replace(R.id.frame_layout, fragment);
+        transaction.commit();
+
+    }
 }
+
+
+
+
+
