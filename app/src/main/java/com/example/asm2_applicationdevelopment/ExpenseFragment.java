@@ -1,64 +1,120 @@
 package com.example.asm2_applicationdevelopment;
 
+import android.app.AlertDialog;
+import android.content.DialogInterface;
+import android.content.Intent;
 import android.os.Bundle;
-
-import androidx.fragment.app.Fragment;
-
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
+import android.widget.EditText;
+import android.widget.Spinner;
+import android.widget.TextView;
+import android.widget.Toast;
 
-/**
- * A simple {@link Fragment} subclass.
- * Use the {@link ExpenseFragment#newInstance} factory method to
- * create an instance of this fragment.
- */
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.fragment.app.Fragment;
+
+import com.example.asm2_applicationdevelopment.DatabaseSQLite.ExpenseDatabase;
+import com.example.asm2_applicationdevelopment.Model.Expense;
+
 public class ExpenseFragment extends Fragment {
 
-    // TODO: Rename parameter arguments, choose names that match
-    // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
-    private static final String ARG_PARAM1 = "param1";
-    private static final String ARG_PARAM2 = "param2";
-
-    // TODO: Rename and change types of parameters
-    private String mParam1;
-    private String mParam2;
+    private Button btnAddExpense;
+    private Button btnEditExpense;
+    private Button btnDeleteExpense;
+    private TextView textViewExpenseDetails;
+    private ExpenseDatabase expenseDatabase;
+    private int currentExpenseId = -1; // Default to -1 if no expense is selected
 
     public ExpenseFragment() {
         // Required empty public constructor
     }
 
-    /**
-     * Use this factory method to create a new instance of
-     * this fragment using the provided parameters.
-     *
-     * @param param1 Parameter 1.
-     * @param param2 Parameter 2.
-     * @return A new instance of fragment ExpenseFragment.
-     */
-    // TODO: Rename and change types and number of parameters
-    public static ExpenseFragment newInstance(String param1, String param2) {
-        ExpenseFragment fragment = new ExpenseFragment();
-        Bundle args = new Bundle();
-        args.putString(ARG_PARAM1, param1);
-        args.putString(ARG_PARAM2, param2);
-        fragment.setArguments(args);
-        return fragment;
+    public static ExpenseFragment newInstance() {
+        return new ExpenseFragment();
     }
 
     @Override
-    public void onCreate(Bundle savedInstanceState) {
+    public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        if (getArguments() != null) {
-            mParam1 = getArguments().getString(ARG_PARAM1);
-            mParam2 = getArguments().getString(ARG_PARAM2);
+        expenseDatabase = new ExpenseDatabase(getActivity());
+
+    }
+
+    @Nullable
+    @Override
+    public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container,
+                             @Nullable Bundle savedInstanceState) {
+        View view = inflater.inflate(R.layout.fragment_expense, container, false);
+
+        // Initialize UI components
+        btnAddExpense = view.findViewById(R.id.btnAdd);
+        btnEditExpense = view.findViewById(R.id.btnEdit);
+        btnDeleteExpense = view.findViewById(R.id.btnDelete);
+        textViewExpenseDetails = view.findViewById(R.id.tvExpenseDetails);
+
+        // Set click listeners for buttons
+        btnAddExpense.setOnClickListener(v -> navigateToAddExpense());
+        btnEditExpense.setOnClickListener(v -> navigateToEditExpense());
+        btnDeleteExpense.setOnClickListener(v -> deleteExpense());
+
+        // For demonstration purposes, hardcoding an expense ID to show details
+        // Replace this with actual logic to get the selected expense ID
+        currentExpenseId = 1; // Replace with dynamic value if necessary
+        showExpenseDetails(currentExpenseId);
+
+        return view;
+    }
+
+    private void navigateToAddExpense() {
+        Intent intent = new Intent(getActivity(), AddExpenseActivity.class);
+        startActivity(intent);
+    }
+
+    private void navigateToEditExpense() {
+        if (currentExpenseId != -1) {
+            Intent intent = new Intent(getActivity(), EditExpenseActivity.class);
+            intent.putExtra("EXPENSE_ID", currentExpenseId);
+            startActivity(intent);
+        } else {
+            Toast.makeText(getActivity(), "No expense selected for editing", Toast.LENGTH_SHORT).show();
         }
     }
 
-    @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container,
-                             Bundle savedInstanceState) {
-        // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_expense, container, false);
+    private void deleteExpense() {
+        if (currentExpenseId != -1) {
+            new AlertDialog.Builder(getActivity())
+                    .setTitle("Delete Expense")
+                    .setMessage("Are you sure you want to delete this expense?")
+                    .setPositiveButton(android.R.string.yes, (dialog, which) -> {
+                        int result = expenseDatabase.deleteExpense(currentExpenseId);
+                        if (result > 0) {
+                            Toast.makeText(getActivity(), "Expense deleted", Toast.LENGTH_SHORT).show();
+                            // Optionally, update UI or navigate back
+                        } else {
+                            Toast.makeText(getActivity(), "Failed to delete expense", Toast.LENGTH_SHORT).show();
+                        }
+                    })
+                    .setNegativeButton(android.R.string.no, null)
+                    .show();
+        } else {
+            Toast.makeText(getActivity(), "No expense selected for deletion", Toast.LENGTH_SHORT).show();
+        }
+    }
+
+    private void showExpenseDetails(int id) {
+        Expense expense = expenseDatabase.getExpense(id);
+        if (expense != null) {
+            String details = "Description: " + expense.getDescription() + "\n"
+                    + "Date: " + expense.getDate() + "\n"
+                    + "Amount: " + expense.getAmount() + "\n"
+                    + "Category: " + expense.getCategory();
+            textViewExpenseDetails.setText(details);
+        } else {
+            textViewExpenseDetails.setText("No details available.");
+        }
     }
 }

@@ -14,6 +14,8 @@
         tools:targetApi="31">
         <activity android:name=".MainActivity"/>
         <activity android:name=".RegisterAccountActivity"/>
+        <activity android:name=".AddExpenseActivity"/>
+        <activity android:name=".EditExpenseActivity"/>
         <activity
             android:name=".LoginAccountActivity"
             android:exported="true">
