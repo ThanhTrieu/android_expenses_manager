@@ -3,6 +3,7 @@ package com.example.asm2_applicationdevelopment;
 import android.os.Bundle;
 import android.text.TextUtils;
 import android.view.View;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Spinner;
@@ -17,7 +18,7 @@ public class AddExpenseActivity extends AppCompatActivity {
 
     private EditText editTextDescription, editTextDate, editTextAmount;
     private Spinner spinnerCategory;
-    private Button buttonSave;
+    private Button buttonSave, buttonCancel;
     private ExpenseDatabase expenseDatabase;
 
     @Override
@@ -31,15 +32,30 @@ public class AddExpenseActivity extends AppCompatActivity {
         editTextAmount = findViewById(R.id.editTextAmount);
         spinnerCategory = findViewById(R.id.spinnerCategory);
         buttonSave = findViewById(R.id.buttonSave);
+        buttonCancel = findViewById(R.id.buttonCancel);
 
         // Initialize database
         expenseDatabase = new ExpenseDatabase(this);
+
+        // Set up the category spinner
+        ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(this,
+                R.array.expense_categories, android.R.layout.simple_spinner_item);
+        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        spinnerCategory.setAdapter(adapter);
 
         // Set save button click listener
         buttonSave.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 saveExpense();
+            }
+        });
+
+        // Set cancel button click listener
+        buttonCancel.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                finish(); // Close the activity without saving
             }
         });
     }

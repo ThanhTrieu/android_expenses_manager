@@ -8,8 +8,6 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
-import android.widget.EditText;
-import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -41,7 +39,6 @@ public class ExpenseFragment extends Fragment {
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         expenseDatabase = new ExpenseDatabase(getActivity());
-
     }
 
     @Nullable
@@ -61,12 +58,30 @@ public class ExpenseFragment extends Fragment {
         btnEditExpense.setOnClickListener(v -> navigateToEditExpense());
         btnDeleteExpense.setOnClickListener(v -> deleteExpense());
 
-        // For demonstration purposes, hardcoding an expense ID to show details
-        // Replace this with actual logic to get the selected expense ID
-        currentExpenseId = 1; // Replace with dynamic value if necessary
-        showExpenseDetails(currentExpenseId);
+        // Load the latest expense details
+        loadLatestExpenseDetails();
 
         return view;
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        // Refresh the fragment to load the latest expense details
+        loadLatestExpenseDetails();
+    }
+
+    private void loadLatestExpenseDetails() {
+        // Fetch the latest expense from the database
+        Expense latestExpense = expenseDatabase.getLatestExpense(); // Implement this method to fetch the latest expense
+
+        if (latestExpense != null) {
+            currentExpenseId = latestExpense.getId(); // Update the current expense ID
+            showExpenseDetails(currentExpenseId);
+        } else {
+            textViewExpenseDetails.setText("No details available.");
+            currentExpenseId = -1; // Reset the ID if no expense is found
+        }
     }
 
     private void navigateToAddExpense() {
@@ -94,6 +109,7 @@ public class ExpenseFragment extends Fragment {
                         if (result > 0) {
                             Toast.makeText(getActivity(), "Expense deleted", Toast.LENGTH_SHORT).show();
                             // Optionally, update UI or navigate back
+                            loadLatestExpenseDetails(); // Refresh the details after deletion
                         } else {
                             Toast.makeText(getActivity(), "Failed to delete expense", Toast.LENGTH_SHORT).show();
                         }

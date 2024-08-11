@@ -87,6 +87,27 @@ public class ExpenseDatabase extends SQLiteOpenHelper {
             return null; // Or throw an exception, or return a default object, depending on your use case
         }
     }
+    // Add this method to your ExpenseDatabase class
+    @SuppressLint("Range")
+    public Expense getLatestExpense() {
+        Expense expense = null;
+        SQLiteDatabase db = this.getReadableDatabase();
+        // Query to get the most recently added expense based on the ID
+        Cursor cursor = db.query("expenses", null, null, null, null, null, "id DESC", "1");
+
+        if (cursor != null && cursor.moveToFirst()) {
+            expense = new Expense();
+            expense.setId(cursor.getInt(cursor.getColumnIndex("id")));
+            expense.setDescription(cursor.getString(cursor.getColumnIndex("description")));
+            expense.setDate(cursor.getString(cursor.getColumnIndex("date")));
+            expense.setAmount(cursor.getDouble(cursor.getColumnIndex("amount")));
+            expense.setCategory(cursor.getString(cursor.getColumnIndex("category")));
+            cursor.close();
+        }
+
+        db.close();
+        return expense;
+    }
 
 
     // Method to update an expense

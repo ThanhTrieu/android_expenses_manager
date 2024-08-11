@@ -1,7 +1,7 @@
 package com.example.asm2_applicationdevelopment;
 
 import android.os.Bundle;
-import android.view.View;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Spinner;
@@ -36,8 +36,14 @@ public class EditExpenseActivity extends AppCompatActivity {
         // Initialize the database
         expenseDatabase = new ExpenseDatabase(this);
 
+        // Populate the Spinner with categories
+        ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(this,
+                R.array.expense_categories, android.R.layout.simple_spinner_item);
+        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        spinnerCategory.setAdapter(adapter);
+
         // Get the expense ID from the intent
-        expenseId = getIntent().getIntExtra("expense_id", -1);
+        expenseId = getIntent().getIntExtra("EXPENSE_ID", -1); // Use the correct intent key "EXPENSE_ID"
 
         // Load expense data if editing
         if (expenseId != -1) {
@@ -45,19 +51,9 @@ public class EditExpenseActivity extends AppCompatActivity {
         }
 
         // Set click listeners for buttons
-        buttonSave.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                saveExpense();
-            }
-        });
+        buttonSave.setOnClickListener(v -> saveExpense());
 
-        buttonCancel.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                finish();
-            }
-        });
+        buttonCancel.setOnClickListener(v -> finish());
     }
 
     private void loadExpenseData(int id) {
@@ -67,8 +63,11 @@ public class EditExpenseActivity extends AppCompatActivity {
             editTextDescription.setText(expense.getDescription());
             editTextDate.setText(expense.getDate());
             editTextAmount.setText(String.valueOf(expense.getAmount()));
-            // Assuming you have set up the spinner adapter and data
-            // spinnerCategory.setSelection(getIndex(spinnerCategory, expense.getCategory()));
+
+            // Set the correct category in the spinner
+            String category = expense.getCategory();
+            int spinnerPosition = ((ArrayAdapter<String>)spinnerCategory.getAdapter()).getPosition(category);
+            spinnerCategory.setSelection(spinnerPosition);
         }
     }
 
@@ -96,15 +95,5 @@ public class EditExpenseActivity extends AppCompatActivity {
         } else {
             Toast.makeText(this, "Failed to update expense", Toast.LENGTH_SHORT).show();
         }
-    }
-
-    // Optional method to get spinner index based on value
-    private int getIndex(Spinner spinner, String value) {
-        for (int i = 0; i < spinner.getCount(); i++) {
-            if (spinner.getItemAtPosition(i).toString().equalsIgnoreCase(value)) {
-                return i;
-            }
-        }
-        return 0;
     }
 }

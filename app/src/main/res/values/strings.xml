@@ -25,6 +25,14 @@
     <string name="bank">Bank</string>
     <string name="profile">Profile</string>
     <string name="report">Report</string>
+    <string-array name="expense_categories">
+        <item>Food</item>
+        <item>Transportation</item>
+        <item>Entertainment</item>
+        <item>Utilities</item>
+        <item>Shopping</item>
+        <item>Other</item>
+    </string-array>
 
 
 </resources>
