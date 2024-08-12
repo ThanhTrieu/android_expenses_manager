@@ -19,7 +19,7 @@
             android:layout_height="?actionBarSize"
             android:id="@+id/toolbar"
             android:elevation="4dp"
-            android:background="#3A9BE8"/>
+            android:background="#F67418"/>
 
         <FrameLayout
             android:layout_width="match_parent"

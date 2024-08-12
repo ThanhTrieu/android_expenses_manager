@@ -3,7 +3,7 @@
     android:orientation="vertical"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@drawable/dialogbkg">
+    android:background="#75C1FD">
 
 <!--    <ImageView-->
 <!--        android:layout_width="70dp"-->
@@ -23,8 +23,9 @@
             android:layout_height="wrap_content"
             android:textAlignment="viewStart"
             android:text="Create"
+            android:textStyle="bold"
             android:padding="8dp"
-            android:textColor="@color/lavender"
+            android:textColor="@color/background"
             android:layout_marginStart="12dp"
             android:layout_marginTop="5dp"
             android:textSize="25dp" />
@@ -41,7 +42,7 @@
 
 
     <LinearLayout
-        android:id="@+id/layoutVideo"
+        android:id="@+id/income"
         android:orientation="horizontal"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -56,60 +57,33 @@
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Upload a video"
-            android:textColor="@color/lavender"
+            android:text="Income"
+            android:drawableLeft="@drawable/add"
+            android:drawablePadding="10dp"
+            android:textColor="@color/background"
             android:layout_marginLeft="30dp"
             android:textSize="16sp"/>
 
     </LinearLayout>
 
     <LinearLayout
-        android:id="@+id/layoutShorts"
+        android:id="@+id/outcome"
         android:orientation="horizontal"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:padding="10dp">
 
-
-<!--        <ImageView-->
-<!--            android:layout_width="wrap_content"-->
-<!--            android:layout_height="wrap_content"-->
-<!--            android:src="@drawable/ic_baseline_whatshot_24"/>-->
-
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Create a short"
-            android:textColor="@color/lavender"
+            android:text="Expense"
+            android:drawableLeft="@drawable/img_9"
+            android:drawablePadding="10dp"
+            android:textColor="@color/background"
             android:layout_marginLeft="30dp"
             android:textSize="16sp"/>
 
     </LinearLayout>
 
-    <LinearLayout
-        android:id="@+id/layoutLive"
-        android:orientation="horizontal"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:paddingLeft="10dp"
-        android:paddingRight="10dp"
-        android:paddingTop="10dp"
-        android:paddingBottom="30dp">
-
-
-<!--        <ImageView-->
-<!--            android:layout_width="wrap_content"-->
-<!--            android:layout_height="wrap_content"-->
-<!--            android:src="@drawable/ic_baseline_vibration_24"/>-->
-
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Go live"
-            android:textColor="@color/lavender"
-            android:layout_marginLeft="30dp"
-            android:textSize="16sp"/>
-
-    </LinearLayout>
 
 </LinearLayout>

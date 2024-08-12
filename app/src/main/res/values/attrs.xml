@@ -1,0 +1,5 @@
+<resources>
+    <declare-styleable name="ThemeOverlay">
+        <attr name="colorBackground" format="color"/>
+    </declare-styleable>
+</resources>

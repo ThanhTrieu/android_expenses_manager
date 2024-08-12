@@ -9,7 +9,7 @@
         android:id="@+id/tvTitle"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="@string/edit_expense"
+        android:text="@string/edit_income"
         android:textSize="24sp"
         android:textStyle="bold"
         android:textColor="#333333"

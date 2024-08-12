@@ -9,7 +9,7 @@
         android:id="@+id/tvTitle"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Add New Expense"
+        android:text="@string/add_new_expense"
         android:textSize="20sp"
         android:textStyle="bold"
         android:textColor="#333333"
@@ -21,7 +21,7 @@
         android:id="@+id/editTextDescription"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:hint="Description"
+        android:hint="@string/description"
         android:inputType="text"
         android:layout_below="@id/tvTitle"
         android:layout_marginBottom="16dp"
@@ -33,7 +33,7 @@
         android:id="@+id/editTextDate"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:hint="Date (YYYY-MM-DD)"
+        android:hint="@string/date_yyyy_mm_dd"
         android:inputType="date"
         android:layout_below="@id/editTextDescription"
         android:layout_marginBottom="16dp"
@@ -45,29 +45,48 @@
         android:id="@+id/editTextAmount"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:hint="Amount"
+        android:hint="@string/amount"
         android:inputType="numberDecimal"
         android:layout_below="@id/editTextDate"
         android:layout_marginBottom="16dp"
         android:padding="12dp"
         android:background="@drawable/add_expense_background"/>
 
-    <!-- Category Spinner -->
-    <Spinner
-        android:id="@+id/spinnerCategory"
+    <!-- Category Label and Spinner -->
+    <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:orientation="horizontal"
         android:layout_below="@id/editTextAmount"
-        android:layout_marginBottom="16dp"/>
+        android:layout_marginBottom="16dp">
 
+        <!-- Category Label -->
+        <TextView
+            android:id="@+id/edtCategory"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/category"
+            android:textSize="18sp"
+            android:background="@drawable/add_expense_background"
+            android:layout_gravity="center_vertical"
+            android:layout_marginEnd="8dp"/>
+
+        <!-- Category Spinner -->
+        <Spinner
+            android:id="@+id/spinnerCategory"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"/>
+    </LinearLayout>
+
+    <!-- Save Button -->
     <!-- Save Button -->
     <Button
         android:id="@+id/buttonSave"
+        style="@style/SaveButtonStyle"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Save"
-        android:background="#4CAF50"
-        android:textColor="#FFFFFF"
+        android:text="@string/save"
         android:layout_alignParentEnd="true"
         android:layout_alignParentBottom="true"
         android:layout_marginEnd="8dp"
@@ -77,11 +96,10 @@
     <!-- Cancel Button -->
     <Button
         android:id="@+id/buttonCancel"
+        style="@style/CancelButtonStyle"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Cancel"
-        android:background="#F44336"
-        android:textColor="#FFFFFF"
+        android:text="@string/cancel"
         android:layout_toStartOf="@id/buttonSave"
         android:layout_alignParentBottom="true"
         android:layout_marginEnd="8dp"

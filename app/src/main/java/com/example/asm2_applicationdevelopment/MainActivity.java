@@ -2,15 +2,12 @@ package com.example.asm2_applicationdevelopment;
 
 import android.app.Dialog;
 import android.content.Intent;
-import android.graphics.Color;
-import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
 import android.view.Gravity;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.Window;
-import android.widget.LinearLayout;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
@@ -24,7 +21,6 @@ import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
 
-import com.google.android.material.bottomappbar.BottomAppBar;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.navigation.NavigationBarView;
@@ -32,10 +28,8 @@ import com.google.android.material.navigation.NavigationView;
 
 public class MainActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener {
     DrawerLayout drawerLayout;
-
     BottomNavigationView bottomNavigationView;
     FloatingActionButton fab;
-
     Toolbar toolbar;
     FragmentManager fragmentManager;
 
@@ -82,18 +76,56 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 return false;
             }
         });
+
         fragmentManager = getSupportFragmentManager();
         openFragment(new HomeFragment());
 
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Toast.makeText(MainActivity.this, "Upload Video", Toast.LENGTH_SHORT).show();
+                showBottomSheetDialog();
             }
         });
-
     }
 
+    private void showBottomSheetDialog() {
+        Dialog bottomSheetDialog = new Dialog(MainActivity.this);
+        bottomSheetDialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
+        bottomSheetDialog.setContentView(R.layout.bottomsheetlayout);
+
+        // Set dialog to full width and wrap content height
+        bottomSheetDialog.getWindow().setLayout(
+                ViewGroup.LayoutParams.MATCH_PARENT,
+                ViewGroup.LayoutParams.WRAP_CONTENT
+        );
+
+        // Find the expense item and set click listener
+        View expenseItem = bottomSheetDialog.findViewById(R.id.outcome);
+        if (expenseItem != null) {
+            expenseItem.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    // Start AddExpenseActivity
+                    Intent intent = new Intent(MainActivity.this, AddExpenseActivity.class);
+                    startActivity(intent);
+                    bottomSheetDialog.dismiss(); // Dismiss the dialog after the click
+                }
+            });
+        }
+        View incomeItem = bottomSheetDialog.findViewById(R.id.income);
+        if (incomeItem != null) {
+            incomeItem.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    Intent intent = new Intent(MainActivity.this, AddIncomeActivity.class);
+                    startActivity(intent);
+                    bottomSheetDialog.dismiss();
+                }
+            });
+        }
+
+        bottomSheetDialog.show();
+    }
 
 
 
@@ -102,6 +134,8 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         int itemId = item.getItemId();
         if (itemId == R.id.nav_expense) {
             openFragment(new ExpenseFragment());
+        } else if (itemId == R.id.nav_income) {
+            openFragment(new IncomeFragment());
         } else if (itemId == R.id.nav_budget) {
             openFragment(new BudgetFragment());
         } else if (itemId == R.id.nav_setting) {
@@ -121,15 +155,10 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             super.onBackPressed();
         }
     }
+
     private void openFragment(Fragment fragment){
         FragmentTransaction transaction = fragmentManager.beginTransaction();
         transaction.replace(R.id.frame_layout, fragment);
         transaction.commit();
-
     }
 }
-
-
-
-
-

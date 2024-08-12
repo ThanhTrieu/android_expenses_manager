@@ -11,21 +11,21 @@ import android.widget.Toast;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 
-import com.example.asm2_applicationdevelopment.DatabaseSQLite.ExpenseDatabase;
-import com.example.asm2_applicationdevelopment.Model.Expense;
+import com.example.asm2_applicationdevelopment.DatabaseSQLite.IncomeDatabase;
+import com.example.asm2_applicationdevelopment.Model.Income;
 
-public class EditExpenseActivity extends AppCompatActivity {
+public class EditIncomeActivity extends AppCompatActivity {
 
     private EditText editTextDescription, editTextDate, editTextAmount;
     private Spinner spinnerCategory;
     private Button buttonSave, buttonCancel, buttonDelete;
-    private ExpenseDatabase expenseDatabase;
-    private int expenseId;
+    private IncomeDatabase incomeDatabase;
+    private int incomeId;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_edit_expense);
+        setContentView(R.layout.activity_edit_income);
 
         // Initialize the views
         editTextDescription = findViewById(R.id.editTextDescription);
@@ -37,38 +37,38 @@ public class EditExpenseActivity extends AppCompatActivity {
         buttonDelete = findViewById(R.id.buttonDelete); // Ensure this ID matches your layout
 
         // Initialize the database
-        expenseDatabase = new ExpenseDatabase(this);
+        incomeDatabase = new IncomeDatabase(this);
 
         // Populate the Spinner with categories
         ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(this,
-                R.array.expense_categories, android.R.layout.simple_spinner_item);
+                R.array.income_categories, android.R.layout.simple_spinner_item);
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         spinnerCategory.setAdapter(adapter);
 
-        // Get the expense ID from the intent
-        expenseId = getIntent().getIntExtra("EXPENSE_ID", -1); // Use the correct intent key "EXPENSE_ID"
+        // Get the income ID from the intent
+        incomeId = getIntent().getIntExtra("INCOME_ID", -1); // Use the correct intent key "INCOME_ID"
 
-        // Load expense data if editing
-        if (expenseId != -1) {
-            loadExpenseData(expenseId);
+        // Load income data if editing
+        if (incomeId != -1) {
+            loadIncomeData(incomeId);
         }
 
         // Set click listeners for buttons
-        buttonSave.setOnClickListener(v -> saveExpense());
+        buttonSave.setOnClickListener(v -> saveIncome());
         buttonCancel.setOnClickListener(v -> finish());
-        buttonDelete.setOnClickListener(v -> confirmDeleteExpense()); // Handle delete with confirmation
+        buttonDelete.setOnClickListener(v -> confirmDeleteIncome()); // Handle delete with confirmation
     }
 
-    private void loadExpenseData(int id) {
-        Expense expense = expenseDatabase.getExpense(id);
+    private void loadIncomeData(int id) {
+        Income income = incomeDatabase.getIncome(id);
 
-        if (expense != null) {
-            editTextDescription.setText(expense.getDescription());
-            editTextDate.setText(expense.getDate());
-            editTextAmount.setText(String.valueOf(expense.getAmount()));
+        if (income != null) {
+            editTextDescription.setText(income.getDescription());
+            editTextDate.setText(income.getDate());
+            editTextAmount.setText(String.valueOf(income.getAmount()));
 
             // Set the correct category in the spinner
-            String category = expense.getCategory();
+            String category = income.getCategory();
             ArrayAdapter<String> adapter = (ArrayAdapter<String>) spinnerCategory.getAdapter();
             int spinnerPosition = adapter.getPosition(category);
             if (spinnerPosition >= 0) {
@@ -77,7 +77,7 @@ public class EditExpenseActivity extends AppCompatActivity {
         }
     }
 
-    private void saveExpense() {
+    private void saveIncome() {
         String description = editTextDescription.getText().toString().trim();
         String date = editTextDate.getText().toString().trim();
         String amountStr = editTextAmount.getText().toString().trim();
@@ -96,46 +96,46 @@ public class EditExpenseActivity extends AppCompatActivity {
             return;
         }
 
-        Expense expense = new Expense(expenseId, description, date, amount, category);
+        Income income = new Income(incomeId, description, date, amount, category);
 
-        // Update the existing expense
-        int result = expenseDatabase.updateExpense(expense);
+        // Update the existing income
+        int result = incomeDatabase.updateIncome(income);
 
         if (result > 0) {
-            Toast.makeText(this, "Expense updated successfully", Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, "Income updated successfully", Toast.LENGTH_SHORT).show();
             finish();
         } else {
-            Toast.makeText(this, "Failed to update expense", Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, "Failed to update income", Toast.LENGTH_SHORT).show();
         }
     }
 
-    private void confirmDeleteExpense() {
+    private void confirmDeleteIncome() {
         new AlertDialog.Builder(this)
-                .setTitle("Delete Expense")
-                .setMessage("Do you want to delete this expense?")
+                .setTitle("Delete Income")
+                .setMessage("Do you want to delete this income?")
                 .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
-                        deleteExpense();
+                        deleteIncome();
                     }
                 })
                 .setNegativeButton("No", null)
                 .show();
     }
 
-    private void deleteExpense() {
-        if (expenseId != -1) {
+    private void deleteIncome() {
+        if (incomeId != -1) {
             // Perform the delete operation
-            int result = expenseDatabase.deleteExpense(expenseId);
+            int result = incomeDatabase.deleteIncome(incomeId);
 
             if (result > 0) {
-                Toast.makeText(this, "Expense deleted successfully", Toast.LENGTH_SHORT).show();
+                Toast.makeText(this, "Income deleted successfully", Toast.LENGTH_SHORT).show();
                 finish(); // Close the activity after deletion
             } else {
-                Toast.makeText(this, "Failed to delete expense", Toast.LENGTH_SHORT).show();
+                Toast.makeText(this, "Failed to delete income", Toast.LENGTH_SHORT).show();
             }
         } else {
-            Toast.makeText(this, "No expense to delete", Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, "No income to delete", Toast.LENGTH_SHORT).show();
         }
     }
 }

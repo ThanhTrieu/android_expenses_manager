@@ -1,31 +1,31 @@
 package com.example.asm2_applicationdevelopment;
 
-import android.app.AlertDialog;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
-import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
+import com.example.asm2_applicationdevelopment.Adapter.ExpenseAdapter;
 import com.example.asm2_applicationdevelopment.DatabaseSQLite.ExpenseDatabase;
 import com.example.asm2_applicationdevelopment.Model.Expense;
+
+import java.util.List;
 
 public class ExpenseFragment extends Fragment {
 
     private Button btnAddExpense;
-    private Button btnEditExpense;
-    private Button btnDeleteExpense;
-    private TextView textViewExpenseDetails;
+    private RecyclerView recyclerView;
+    private ExpenseAdapter expenseAdapter;
     private ExpenseDatabase expenseDatabase;
-    private int currentExpenseId = -1; // Default to -1 if no expense is selected
 
     public ExpenseFragment() {
         // Required empty public constructor
@@ -48,40 +48,22 @@ public class ExpenseFragment extends Fragment {
         View view = inflater.inflate(R.layout.fragment_expense, container, false);
 
         // Initialize UI components
-        btnAddExpense = view.findViewById(R.id.btnAdd);
-        btnEditExpense = view.findViewById(R.id.btnEdit);
-        btnDeleteExpense = view.findViewById(R.id.btnDelete);
-        textViewExpenseDetails = view.findViewById(R.id.tvExpenseDetails);
+        recyclerView = view.findViewById(R.id.rvExpenses); // Ensure this ID matches your layout
 
-        // Set click listeners for buttons
-        btnAddExpense.setOnClickListener(v -> navigateToAddExpense());
-        btnEditExpense.setOnClickListener(v -> navigateToEditExpense());
-        btnDeleteExpense.setOnClickListener(v -> deleteExpense());
+        // Set up RecyclerView
+        recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
+        expenseAdapter = new ExpenseAdapter(expenseDatabase.getAllExpenses(), this::onExpenseItemClick);
+        recyclerView.setAdapter(expenseAdapter);
 
-        // Load the latest expense details
-        loadLatestExpenseDetails();
-
+        // Set click listener for add button
         return view;
     }
 
     @Override
     public void onResume() {
         super.onResume();
-        // Refresh the fragment to load the latest expense details
-        loadLatestExpenseDetails();
-    }
-
-    private void loadLatestExpenseDetails() {
-        // Fetch the latest expense from the database
-        Expense latestExpense = expenseDatabase.getLatestExpense(); // Implement this method to fetch the latest expense
-
-        if (latestExpense != null) {
-            currentExpenseId = latestExpense.getId(); // Update the current expense ID
-            showExpenseDetails(currentExpenseId);
-        } else {
-            textViewExpenseDetails.setText("No details available.");
-            currentExpenseId = -1; // Reset the ID if no expense is found
-        }
+        // Refresh the RecyclerView to load the latest expenses
+        expenseAdapter.updateExpenses(expenseDatabase.getAllExpenses());
     }
 
     private void navigateToAddExpense() {
@@ -89,48 +71,9 @@ public class ExpenseFragment extends Fragment {
         startActivity(intent);
     }
 
-    private void navigateToEditExpense() {
-        if (currentExpenseId != -1) {
-            Intent intent = new Intent(getActivity(), EditExpenseActivity.class);
-            intent.putExtra("EXPENSE_ID", currentExpenseId);
-            startActivity(intent);
-        } else {
-            Toast.makeText(getActivity(), "No expense selected for editing", Toast.LENGTH_SHORT).show();
-        }
-    }
-
-    private void deleteExpense() {
-        if (currentExpenseId != -1) {
-            new AlertDialog.Builder(getActivity())
-                    .setTitle("Delete Expense")
-                    .setMessage("Are you sure you want to delete this expense?")
-                    .setPositiveButton(android.R.string.yes, (dialog, which) -> {
-                        int result = expenseDatabase.deleteExpense(currentExpenseId);
-                        if (result > 0) {
-                            Toast.makeText(getActivity(), "Expense deleted", Toast.LENGTH_SHORT).show();
-                            // Optionally, update UI or navigate back
-                            loadLatestExpenseDetails(); // Refresh the details after deletion
-                        } else {
-                            Toast.makeText(getActivity(), "Failed to delete expense", Toast.LENGTH_SHORT).show();
-                        }
-                    })
-                    .setNegativeButton(android.R.string.no, null)
-                    .show();
-        } else {
-            Toast.makeText(getActivity(), "No expense selected for deletion", Toast.LENGTH_SHORT).show();
-        }
-    }
-
-    private void showExpenseDetails(int id) {
-        Expense expense = expenseDatabase.getExpense(id);
-        if (expense != null) {
-            String details = "Description: " + expense.getDescription() + "\n"
-                    + "Date: " + expense.getDate() + "\n"
-                    + "Amount: " + expense.getAmount() + "\n"
-                    + "Category: " + expense.getCategory();
-            textViewExpenseDetails.setText(details);
-        } else {
-            textViewExpenseDetails.setText("No details available.");
-        }
+    private void onExpenseItemClick(Expense expense) {
+        Intent intent = new Intent(getActivity(), EditExpenseActivity.class);
+        intent.putExtra("EXPENSE_ID", expense.getId());
+        startActivity(intent);
     }
 }

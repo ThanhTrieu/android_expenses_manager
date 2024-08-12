@@ -25,12 +25,33 @@
     <string name="bank">Bank</string>
     <string name="profile">Profile</string>
     <string name="report">Report</string>
+    <string name="income">Income</string>
+    <string name="edit_income">Edit Income</string>
+    <string name="description">Description</string>
+    <string name="date_yyyy_mm_dd">Date (YYYY-MM-DD)</string>
+    <string name="amount">Amount</string>
+    <string name="category">Category</string>
+    <string name="save">Save</string>
+    <string name="cancel">Cancel</string>
+    <string name="delete">Delete</string>
+    <string name="add_new_income">Add New Income</string>
+    <string name="add_new_expense">Add New Expense</string>
+    <string name="edit_expense">Edit Expense</string>
+    <string name="date">Date</string>
     <string-array name="expense_categories">
         <item>Food</item>
         <item>Transportation</item>
         <item>Entertainment</item>
         <item>Utilities</item>
         <item>Shopping</item>
+        <item>Other</item>
+    </string-array>
+    <string-array name="income_categories">
+        <item>Salary</item>
+        <item>Freelancing</item>
+        <item>Investments</item>
+        <item>Gifts</item>
+        <item>Rental Income</item>
         <item>Other</item>
     </string-array>
 
