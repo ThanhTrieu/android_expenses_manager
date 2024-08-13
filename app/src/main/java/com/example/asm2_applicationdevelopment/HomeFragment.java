@@ -5,6 +5,7 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -19,6 +20,8 @@ import com.example.asm2_applicationdevelopment.DatabaseSQLite.IncomeDatabase;
 import com.example.asm2_applicationdevelopment.Model.Expense;
 import com.example.asm2_applicationdevelopment.Model.Income;
 
+import java.util.List;
+
 public class HomeFragment extends Fragment {
 
     private RecyclerView recyclerViewIncome;
@@ -27,6 +30,8 @@ public class HomeFragment extends Fragment {
     private ExpenseAdapter expenseAdapter;
     private IncomeDatabase incomeDatabase;
     private ExpenseDatabase expenseDatabase;
+    private TextView tvTotalIncome;
+    private TextView tvTotalExpense;
 
     public HomeFragment() {
         // Required empty public constructor
@@ -52,15 +57,27 @@ public class HomeFragment extends Fragment {
         // Initialize UI components
         recyclerViewIncome = view.findViewById(R.id.rvIncomes);
         recyclerViewExpense = view.findViewById(R.id.rvExpenses);
+        tvTotalIncome = view.findViewById(R.id.tvTotalIncome);
+        tvTotalExpense = view.findViewById(R.id.tvTotalExpense);
 
-        // Set up RecyclerViews
-        recyclerViewIncome.setLayoutManager(new LinearLayoutManager(getContext()));
+        // Set up RecyclerViews with horizontal LinearLayoutManager
+        LinearLayoutManager incomeLayoutManager = new LinearLayoutManager(getContext(), LinearLayoutManager.HORIZONTAL, false);
+        recyclerViewIncome.setLayoutManager(incomeLayoutManager);
         incomeAdapter = new IncomeAdapter(incomeDatabase.getAllIncomes(), this::onIncomeItemClick);
         recyclerViewIncome.setAdapter(incomeAdapter);
 
-        recyclerViewExpense.setLayoutManager(new LinearLayoutManager(getContext()));
+        LinearLayoutManager expenseLayoutManager = new LinearLayoutManager(getContext(), LinearLayoutManager.HORIZONTAL, false);
+        recyclerViewExpense.setLayoutManager(expenseLayoutManager);
         expenseAdapter = new ExpenseAdapter(expenseDatabase.getAllExpenses(), this::onExpenseItemClick);
         recyclerViewExpense.setAdapter(expenseAdapter);
+
+        // Add item decoration
+        int itemOffset = getResources().getDimensionPixelSize(R.dimen.item_offset); // Ensure this dimension is defined in dimens.xml
+        recyclerViewIncome.addItemDecoration(new ItemOffsetDecoration(itemOffset));
+        recyclerViewExpense.addItemDecoration(new ItemOffsetDecoration(itemOffset));
+
+        // Calculate and display the total amounts
+        updateTotalAmounts();
 
         return view;
     }
@@ -71,6 +88,29 @@ public class HomeFragment extends Fragment {
         // Refresh the RecyclerViews to load the latest data
         incomeAdapter.updateIncomes(incomeDatabase.getAllIncomes());
         expenseAdapter.updateExpenses(expenseDatabase.getAllExpenses());
+
+        // Update total amounts
+        updateTotalAmounts();
+    }
+
+    private void updateTotalAmounts() {
+        List<Income> incomes = incomeDatabase.getAllIncomes();
+        List<Expense> expenses = expenseDatabase.getAllExpenses();
+
+        double totalIncome = 0;
+        double totalExpense = 0;
+
+        for (Income income : incomes) {
+            totalIncome += income.getAmount();
+        }
+
+        for (Expense expense : expenses) {
+            totalExpense += expense.getAmount();
+        }
+
+        // Làm tròn tổng sau dấu phẩy 3 ký tự
+        tvTotalIncome.setText(String.format("%.3f", totalIncome));
+        tvTotalExpense.setText(String.format("%.3f", totalExpense));
     }
 
     private void onIncomeItemClick(Income income) {

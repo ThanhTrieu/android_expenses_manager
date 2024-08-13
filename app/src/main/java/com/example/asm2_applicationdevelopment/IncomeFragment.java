@@ -12,6 +12,7 @@ import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.example.asm2_applicationdevelopment.Adapter.ExpenseAdapter;
 import com.example.asm2_applicationdevelopment.Adapter.IncomeAdapter;
 import com.example.asm2_applicationdevelopment.DatabaseSQLite.IncomeDatabase;
 import com.example.asm2_applicationdevelopment.Model.Income;
@@ -49,7 +50,14 @@ public class IncomeFragment extends Fragment {
         recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
         incomeAdapter = new IncomeAdapter(incomeDatabase.getAllIncomes(), this::onIncomeItemClick);
         recyclerView.setAdapter(incomeAdapter);
+        LinearLayoutManager incomeLayoutManager = new LinearLayoutManager(getContext(), LinearLayoutManager.HORIZONTAL, false);
+        recyclerView.setLayoutManager(incomeLayoutManager);
+        incomeAdapter = new IncomeAdapter(incomeDatabase.getAllIncomes(), this::onIncomeItemClick);
+        recyclerView.setAdapter(incomeAdapter);
 
+        // Add item decoration
+        int itemOffset = getResources().getDimensionPixelSize(R.dimen.item_offset); // Ensure this dimension is defined in dimens.xml
+        recyclerView.addItemDecoration(new ItemOffsetDecoration(itemOffset));
         return view;
     }
 
