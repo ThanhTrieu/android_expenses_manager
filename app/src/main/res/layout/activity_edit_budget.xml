@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:padding="16dp">
+
+    <!-- Budget Category Input -->
+    <EditText
+        android:id="@+id/etEditCategory"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="Enter Budget Category"
+        android:inputType="text" />
+
+    <!-- Budget Amount Input -->
+    <EditText
+        android:id="@+id/etEditAmount"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="Enter Budget Amount"
+        android:inputType="numberDecimal" />
+
+    <!-- Save Button -->
+    <Button
+        android:id="@+id/btnSaveChanges"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Save Changes"
+        android:layout_marginTop="16dp"/>
+
+    <!-- Cancel Button -->
+    <Button
+        android:id="@+id/btnCancelChanges"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Cancel"
+        android:layout_marginTop="8dp"/>
+
+</LinearLayout>

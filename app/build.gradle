@@ -36,7 +36,8 @@ dependencies {
     implementation libs.material
     implementation libs.activity
     implementation libs.constraintlayout
-    implementation 'com.google.android.material:material:1.9.0' // Use the latest version if available
+    implementation 'com.google.android.material:material:1.9.0'
+    implementation libs.recyclerview// Use the latest version if available
 
 
     testImplementation libs.junit
