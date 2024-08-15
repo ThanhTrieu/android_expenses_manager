@@ -54,7 +54,12 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         navigationView.setNavigationItemSelectedListener(this);
 
         bottomNavigationView.setBackground(null);
+        getSupportFragmentManager().beginTransaction()
+                .replace(R.id.frame_layout, ReportFragment.newInstance())
+                .commit();
 
+        fragmentManager = getSupportFragmentManager();
+        openFragment(new HomeFragment());
         bottomNavigationView.setOnItemSelectedListener(new NavigationBarView.OnItemSelectedListener() {
             @Override
             public boolean onNavigationItemSelected(@NonNull MenuItem menuItem) {
