@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Định nghĩa các id cho các biểu đồ và tài nguyên khác -->
+    <item name="barChartExpense" type="id"/>
+    <item name="pieChartExpense" type="id"/>
+    <item name="barChartIncome" type="id"/>
+    <item name="pieChartIncome" type="id"/>
+    <item name="lineChart1" type="id"/>
+    <item name="scatterChart1" type="id"/>
+</resources>
