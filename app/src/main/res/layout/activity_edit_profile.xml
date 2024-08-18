@@ -24,6 +24,103 @@
         android:focusable="true"
         android:background="#2645F2"
         android:src="@drawable/ic_profile" />
+
+    <EditText
+        android:id="@+id/edt_username"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="32dp"
+        android:hint="Username"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/img_profile"
+        android:background="@drawable/profile_bg"
+        android:drawableLeft="@drawable/ic_person"
+        android:drawablePadding="10dp"
+        android:paddingLeft="20dp"
+        android:paddingTop="10dp"
+        android:paddingRight="10dp"
+        android:paddingBottom="10dp"
+        android:textColorHint="@color/black"
+        app:layout_constraintHorizontal_bias="0.0" />
+
+    <EditText
+        android:id="@+id/edt_pass"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="24dp"
+        android:drawablePadding="10dp"
+        android:paddingLeft="20dp"
+        android:paddingTop="10dp"
+        android:paddingRight="10dp"
+        android:paddingBottom="10dp"
+        android:textColorHint="@color/black"
+        android:drawableLeft="@drawable/img"
+        android:inputType="textPassword"
+        android:background="@drawable/profile_bg"
+        android:hint="Password"
+        app:layout_constraintEnd_toEndOf="@+id/edt_username"
+        app:layout_constraintStart_toStartOf="@+id/edt_username"
+        app:layout_constraintTop_toBottomOf="@+id/edt_username" />
+
+    <EditText
+        android:id="@+id/edt_email"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="24dp"
+        android:hint="Email"
+        app:layout_constraintEnd_toEndOf="@+id/edt_pass"
+        app:layout_constraintStart_toStartOf="@+id/edt_pass"
+        app:layout_constraintTop_toBottomOf="@+id/edt_pass"
+        android:drawablePadding="10dp"
+        android:paddingLeft="20dp"
+        android:paddingTop="10dp"
+        android:paddingRight="10dp"
+        android:paddingBottom="10dp"
+        android:textColorHint="@color/black"
+        android:drawableLeft="@drawable/ic_email"
+        android:background="@drawable/profile_bg"/>
+
+    <EditText
+        android:id="@+id/edt_phone"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="24dp"
+        android:hint="Phone"
+        app:layout_constraintEnd_toEndOf="@+id/edt_email"
+        app:layout_constraintStart_toStartOf="@+id/edt_email"
+        app:layout_constraintTop_toBottomOf="@+id/edt_email"
+        android:drawablePadding="10dp"
+        android:paddingLeft="20dp"
+        android:paddingTop="10dp"
+        android:paddingRight="10dp"
+        android:paddingBottom="10dp"
+        android:textColorHint="@color/black"
+        android:drawableLeft="@drawable/baseline_phone_24"
+        android:background="@drawable/profile_bg"/>
+
+    <Button
+        android:id="@+id/btn_cancel"
+        style="@style/EditButtonStyle"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="32dp"
+        android:layout_marginTop="24dp"
+        android:text="Cancel"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/edt_phone" />
+
+    <Button
+        android:id="@+id/btn_save"
+        style="@style/SaveButtonStyle"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="24dp"
+        android:layout_marginEnd="32dp"
+        android:text="Save"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/edt_phone" />
+
     <com.google.android.material.floatingactionbutton.FloatingActionButton
         android:id="@+id/floatingActionButton"
         android:layout_width="wrap_content"
@@ -38,88 +135,4 @@
         app:layout_constraintEnd_toEndOf="@+id/img_profile"
         app:srcCompat="@drawable/baseline_camera_alt_24" />
 
-    <TextView
-        android:id="@+id/tv_username"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="32dp"
-        android:text="Username"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/img_profile"
-        android:background="@drawable/profile_bg"
-        android:drawableLeft="@drawable/ic_person"
-        android:drawablePadding="10dp"
-        android:paddingLeft="20dp"
-        android:paddingTop="10dp"
-        android:paddingRight="10dp"
-        android:paddingBottom="10dp"
-        android:textColor="@color/black"
-        app:layout_constraintHorizontal_bias="0.0" />
-
-    <TextView
-        android:id="@+id/tv_pass"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="24dp"
-        android:drawablePadding="10dp"
-        android:paddingLeft="20dp"
-        android:paddingTop="10dp"
-        android:paddingRight="10dp"
-        android:paddingBottom="10dp"
-        android:textColor="@color/black"
-        android:drawableLeft="@drawable/img"
-        android:inputType="textPassword"
-        android:background="@drawable/profile_bg"
-        android:text="Password"
-        app:layout_constraintEnd_toEndOf="@+id/tv_username"
-        app:layout_constraintStart_toStartOf="@+id/tv_username"
-        app:layout_constraintTop_toBottomOf="@+id/tv_username" />
-
-    <TextView
-        android:id="@+id/tv_email"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="24dp"
-        android:text="Email"
-        app:layout_constraintEnd_toEndOf="@+id/tv_pass"
-        app:layout_constraintStart_toStartOf="@+id/tv_pass"
-        app:layout_constraintTop_toBottomOf="@+id/tv_pass"
-        android:drawablePadding="10dp"
-        android:paddingLeft="20dp"
-        android:paddingTop="10dp"
-        android:paddingRight="10dp"
-        android:paddingBottom="10dp"
-        android:textColor="@color/black"
-        android:drawableLeft="@drawable/ic_email"
-        android:background="@drawable/profile_bg"/>
-
-    <TextView
-        android:id="@+id/tv_phone"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="24dp"
-        android:text="Phone"
-        app:layout_constraintEnd_toEndOf="@+id/tv_email"
-        app:layout_constraintStart_toStartOf="@+id/tv_email"
-        app:layout_constraintTop_toBottomOf="@+id/tv_email"
-        android:drawablePadding="10dp"
-        android:paddingLeft="20dp"
-        android:paddingTop="10dp"
-        android:paddingRight="10dp"
-        android:paddingBottom="10dp"
-        android:textColor="@color/black"
-        android:drawableLeft="@drawable/baseline_phone_24"
-        android:background="@drawable/profile_bg"/>
-
-    <Button
-        android:id="@+id/btn_editProfile"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="24dp"
-        style="@style/EditButtonStyle"
-        android:text="Edit"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/tv_phone"
-        />
 </androidx.constraintlayout.widget.ConstraintLayout>

@@ -1,9 +1,12 @@
 package com.example.asm2_applicationdevelopment;
 
+import android.app.DatePickerDialog;
 import android.content.DialogInterface;
 import android.os.Bundle;
+import android.text.TextUtils;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
+import android.widget.DatePicker;
 import android.widget.EditText;
 import android.widget.Spinner;
 import android.widget.Toast;
@@ -14,6 +17,10 @@ import androidx.appcompat.app.AppCompatActivity;
 import com.example.asm2_applicationdevelopment.DatabaseSQLite.IncomeDatabase;
 import com.example.asm2_applicationdevelopment.Model.Income;
 
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
+import java.util.Locale;
+
 public class EditIncomeActivity extends AppCompatActivity {
 
     private EditText editTextDescription, editTextDate, editTextAmount;
@@ -21,6 +28,7 @@ public class EditIncomeActivity extends AppCompatActivity {
     private Button buttonSave, buttonCancel, buttonDelete;
     private IncomeDatabase incomeDatabase;
     private int incomeId;
+    private Calendar calendar;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -34,10 +42,13 @@ public class EditIncomeActivity extends AppCompatActivity {
         spinnerCategory = findViewById(R.id.spinnerCategory);
         buttonSave = findViewById(R.id.buttonSave);
         buttonCancel = findViewById(R.id.buttonCancel);
-        buttonDelete = findViewById(R.id.buttonDelete); // Ensure this ID matches your layout
+        buttonDelete = findViewById(R.id.buttonDelete);
 
         // Initialize the database
         incomeDatabase = new IncomeDatabase(this);
+
+        // Initialize calendar for date picker
+        calendar = Calendar.getInstance();
 
         // Populate the Spinner with categories
         ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(this,
@@ -46,17 +57,39 @@ public class EditIncomeActivity extends AppCompatActivity {
         spinnerCategory.setAdapter(adapter);
 
         // Get the income ID from the intent
-        incomeId = getIntent().getIntExtra("INCOME_ID", -1); // Use the correct intent key "INCOME_ID"
+        incomeId = getIntent().getIntExtra("INCOME_ID", -1);
 
         // Load income data if editing
         if (incomeId != -1) {
             loadIncomeData(incomeId);
         }
 
+        // Set date picker dialog
+        editTextDate.setOnClickListener(v -> showDatePickerDialog());
+
         // Set click listeners for buttons
         buttonSave.setOnClickListener(v -> saveIncome());
         buttonCancel.setOnClickListener(v -> finish());
-        buttonDelete.setOnClickListener(v -> confirmDeleteIncome()); // Handle delete with confirmation
+        buttonDelete.setOnClickListener(v -> confirmDeleteIncome());
+    }
+
+    private void showDatePickerDialog() {
+        int year = calendar.get(Calendar.YEAR);
+        int month = calendar.get(Calendar.MONTH);
+        int day = calendar.get(Calendar.DAY_OF_MONTH);
+
+        DatePickerDialog datePickerDialog = new DatePickerDialog(this,
+                (view, selectedYear, selectedMonth, selectedDay) -> {
+                    calendar.set(selectedYear, selectedMonth, selectedDay);
+                    updateDateField();
+                }, year, month, day);
+        datePickerDialog.show();
+    }
+
+    private void updateDateField() {
+        String myFormat = "yyyy-MM-dd"; // Adjust date format if needed
+        SimpleDateFormat sdf = new SimpleDateFormat(myFormat, Locale.getDefault());
+        editTextDate.setText(sdf.format(calendar.getTime()));
     }
 
     private void loadIncomeData(int id) {
@@ -113,19 +146,13 @@ public class EditIncomeActivity extends AppCompatActivity {
         new AlertDialog.Builder(this)
                 .setTitle("Delete Income")
                 .setMessage("Do you want to delete this income?")
-                .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        deleteIncome();
-                    }
-                })
+                .setPositiveButton("Yes", (dialog, which) -> deleteIncome())
                 .setNegativeButton("No", null)
                 .show();
     }
 
     private void deleteIncome() {
         if (incomeId != -1) {
-            // Perform the delete operation
             int result = incomeDatabase.deleteIncome(incomeId);
 
             if (result > 0) {

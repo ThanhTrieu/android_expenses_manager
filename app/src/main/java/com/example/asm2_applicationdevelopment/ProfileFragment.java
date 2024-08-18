@@ -1,64 +1,118 @@
 package com.example.asm2_applicationdevelopment;
 
+import android.content.Intent;
+import android.content.SharedPreferences;
+import android.net.Uri;
 import android.os.Bundle;
-
-import androidx.fragment.app.Fragment;
-
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
+import android.widget.ImageView;
+import android.widget.TextView;
 
-/**
- * A simple {@link Fragment} subclass.
- * Use the {@link ProfileFragment#newInstance} factory method to
- * create an instance of this fragment.
- */
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.fragment.app.Fragment;
+
+import com.example.asm2_applicationdevelopment.DatabaseSQLite.UserDatabase;
+import com.example.asm2_applicationdevelopment.Model.User;
+
 public class ProfileFragment extends Fragment {
 
-    // TODO: Rename parameter arguments, choose names that match
-    // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
-    private static final String ARG_PARAM1 = "param1";
-    private static final String ARG_PARAM2 = "param2";
+    private TextView tvUsername, tvPass, tvEmail, tvPhone;
+    private Button btnEditProfile;
+    private ImageView imgProfile;
+    private UserDatabase userDatabase;
+    private String currentUsername;
 
-    // TODO: Rename and change types of parameters
-    private String mParam1;
-    private String mParam2;
+    private static final String PREFS_NAME = "UserProfilePrefs";
+    private static final String PROFILE_IMAGE_URI_KEY = "profile_image_uri";
 
-    public ProfileFragment() {
-        // Required empty public constructor
-    }
+    @Nullable
+    @Override
+    public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
+        // Inflate the layout for this fragment
+        View view = inflater.inflate(R.layout.fragment_profile, container, false);
 
-    /**
-     * Use this factory method to create a new instance of
-     * this fragment using the provided parameters.
-     *
-     * @param param1 Parameter 1.
-     * @param param2 Parameter 2.
-     * @return A new instance of fragment ProfileFragment.
-     */
-    // TODO: Rename and change types and number of parameters
-    public static ProfileFragment newInstance(String param1, String param2) {
-        ProfileFragment fragment = new ProfileFragment();
-        Bundle args = new Bundle();
-        args.putString(ARG_PARAM1, param1);
-        args.putString(ARG_PARAM2, param2);
-        fragment.setArguments(args);
-        return fragment;
+        // Initialize TextViews, ImageView, and Button
+        tvUsername = view.findViewById(R.id.tv_username);
+        tvPass = view.findViewById(R.id.tv_pass);
+        tvEmail = view.findViewById(R.id.tv_email);
+        tvPhone = view.findViewById(R.id.tv_phone);
+        imgProfile = view.findViewById(R.id.img_profile);
+        btnEditProfile = view.findViewById(R.id.btn_editProfile);
+
+        userDatabase = new UserDatabase(getActivity());
+
+        // Retrieve user data from the Bundle
+        Bundle bundle = getArguments();
+        if (bundle != null) {
+            currentUsername = bundle.getString("username", "");
+            loadUserInfo(currentUsername);
+        } else {
+            // Log or handle the case where the Bundle is null
+            tvUsername.setText("N/A");
+            tvPass.setText("N/A");
+            tvEmail.setText("N/A");
+            tvPhone.setText("N/A");
+        }
+
+        // Set click listener for the Edit button
+        btnEditProfile.setOnClickListener(v -> openEditProfileActivity());
+
+        return view;
     }
 
     @Override
-    public void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        if (getArguments() != null) {
-            mParam1 = getArguments().getString(ARG_PARAM1);
-            mParam2 = getArguments().getString(ARG_PARAM2);
+    public void onResume() {
+        super.onResume();
+        if (currentUsername != null) {
+            loadUserInfo(currentUsername); // Reload user info when fragment resumes
         }
     }
 
-    @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container,
-                             Bundle savedInstanceState) {
-        // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_profile, container, false);
+    private void loadUserInfo(String username) {
+        User user = userDatabase.getInfoUser(username, null); // Get user data from database
+        if (user != null) {
+            tvUsername.setText(user.getUsername());
+            tvPass.setText(user.getPassword()); // Ensure getPassword() exists in your User class
+            tvEmail.setText(user.getEmail());
+            tvPhone.setText(user.getPhone());
+
+            // Load the image URI from SharedPreferences
+            SharedPreferences prefs = requireActivity().getSharedPreferences(PREFS_NAME, requireContext().MODE_PRIVATE);
+            String imageUriString = prefs.getString(PROFILE_IMAGE_URI_KEY, null);
+            if (imageUriString != null) {
+                Uri imageUri = Uri.parse(imageUriString);
+                imgProfile.setImageURI(imageUri);
+            }
+        } else {
+            tvUsername.setText("N/A");
+            tvPass.setText("N/A");
+            tvEmail.setText("N/A");
+            tvPhone.setText("N/A");
+        }
+    }
+
+    private void openEditProfileActivity() {
+        Intent intent = new Intent(getActivity(), EditProfileActivity.class);
+        String username = tvUsername.getText().toString();
+        String password = tvPass.getText().toString();
+        String email = tvEmail.getText().toString();
+        String phone = tvPhone.getText().toString();
+
+        // Log values
+        Log.d("ProfileFragment", "Username: " + username);
+        Log.d("ProfileFragment", "Password: " + password);
+        Log.d("ProfileFragment", "Email: " + email);
+        Log.d("ProfileFragment", "Phone: " + phone);
+
+        intent.putExtra("username", username);
+        intent.putExtra("password", password);
+        intent.putExtra("email", email);
+        intent.putExtra("phone", phone);
+        startActivity(intent);
     }
 }

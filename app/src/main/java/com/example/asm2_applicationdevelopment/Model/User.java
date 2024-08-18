@@ -6,6 +6,7 @@ public class User {
         public String password;
         public String email;
         public String phone;
+        private String profileImagePath;
 
         public void setId(int id) {
             this.id = id;
@@ -13,6 +14,10 @@ public class User {
         public void setUsername(String username) {
             this.username = username;
         }
+
+        public void setProfileImagePath(String profileImagePath) {
+        this.profileImagePath = profileImagePath;
+    }
 
         public void setPassword(String password) {
             this.password = password;
@@ -27,7 +32,7 @@ public class User {
         }
 
 
-    public int getId() {
+        public int getId() {
             return id;
         }
 
@@ -47,5 +52,8 @@ public class User {
             return phone;
         }
 
+        public String getProfileImagePath() {
+        return profileImagePath;
+    }
 }
 

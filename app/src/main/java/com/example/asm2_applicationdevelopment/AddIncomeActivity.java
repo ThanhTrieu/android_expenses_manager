@@ -1,10 +1,12 @@
 package com.example.asm2_applicationdevelopment;
 
+import android.app.DatePickerDialog;
 import android.os.Bundle;
 import android.text.TextUtils;
 import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
+import android.widget.DatePicker;
 import android.widget.EditText;
 import android.widget.Spinner;
 import android.widget.Toast;
@@ -14,12 +16,17 @@ import androidx.appcompat.app.AppCompatActivity;
 import com.example.asm2_applicationdevelopment.DatabaseSQLite.IncomeDatabase;
 import com.example.asm2_applicationdevelopment.Model.Income;
 
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
+import java.util.Locale;
+
 public class AddIncomeActivity extends AppCompatActivity {
 
     private EditText editTextDescription, editTextDate, editTextAmount;
     private Spinner spinnerCategory;
     private Button buttonSave, buttonCancel;
     private IncomeDatabase incomeDatabase;
+    private Calendar calendar;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -37,27 +44,42 @@ public class AddIncomeActivity extends AppCompatActivity {
         // Initialize database
         incomeDatabase = new IncomeDatabase(this);
 
+        // Initialize calendar for date picker
+        calendar = Calendar.getInstance();
+
         // Set up the category spinner
         ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(this,
                 R.array.income_categories, android.R.layout.simple_spinner_item);
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         spinnerCategory.setAdapter(adapter);
 
+        // Set date picker dialog
+        editTextDate.setOnClickListener(v -> showDatePickerDialog());
+
         // Set save button click listener
-        buttonSave.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                saveIncome();
-            }
-        });
+        buttonSave.setOnClickListener(view -> saveIncome());
 
         // Set cancel button click listener
-        buttonCancel.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                finish(); // Close the activity without saving
-            }
-        });
+        buttonCancel.setOnClickListener(view -> finish());
+    }
+
+    private void showDatePickerDialog() {
+        int year = calendar.get(Calendar.YEAR);
+        int month = calendar.get(Calendar.MONTH);
+        int day = calendar.get(Calendar.DAY_OF_MONTH);
+
+        DatePickerDialog datePickerDialog = new DatePickerDialog(this,
+                (view, selectedYear, selectedMonth, selectedDay) -> {
+                    calendar.set(selectedYear, selectedMonth, selectedDay);
+                    updateDateField();
+                }, year, month, day);
+        datePickerDialog.show();
+    }
+
+    private void updateDateField() {
+        String myFormat = "yyyy-MM-dd"; // Adjust date format if needed
+        SimpleDateFormat sdf = new SimpleDateFormat(myFormat, Locale.getDefault());
+        editTextDate.setText(sdf.format(calendar.getTime()));
     }
 
     private void saveIncome() {

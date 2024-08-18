@@ -6,6 +6,10 @@ import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
+import android.util.Log;
+import java.util.ArrayList;
+import java.util.List;
+
 
 import com.example.asm2_applicationdevelopment.Model.User;
 
@@ -69,13 +73,19 @@ public class UserDatabase extends SQLiteOpenHelper {
     @SuppressLint("Range")
     public User getInfoUser(String username, String password) {
         Cursor cursor = null;
-        User user = new User();
+        User user = null;
         try {
-            SQLiteDatabase db = this.getWritableDatabase();
-            // Lấy các dữ liệu từ cột nào
-            String[] columns = {ID_COL, USERNAME_COL, EMAIL_COL, PHONE_COL};
-            String condition = USERNAME_COL + " = ? AND " + PASSWORD_COL + " = ?";
-            String[] params = {username, password};
+            SQLiteDatabase db = this.getReadableDatabase();
+            String[] columns = {ID_COL, USERNAME_COL, PASSWORD_COL, EMAIL_COL, PHONE_COL};
+            String condition = USERNAME_COL + " = ?";
+            String[] params = {username};
+
+            // Nếu mật khẩu không null và không rỗng, thêm vào điều kiện
+            if (password != null && !password.isEmpty()) {
+                condition += " AND " + PASSWORD_COL + " = ?";
+                params = new String[]{username, password};
+            }
+
             cursor = db.query(
                     TABLE_NAME,
                     columns,
@@ -85,22 +95,21 @@ public class UserDatabase extends SQLiteOpenHelper {
                     null,
                     null
             );
-            // select id, username, email, phone, where username = ? AND password = ?;
-            if (cursor.getCount() > 0) {
-                cursor.moveToFirst(); // Lấy ra 1 dòng dữ liệu
-                // Đổ dữ liệu vào model
+
+            if (cursor != null && cursor.moveToFirst()) {
+                user = new User();
                 user.setId(cursor.getInt(cursor.getColumnIndex(ID_COL)));
                 user.setUsername(cursor.getString(cursor.getColumnIndex(USERNAME_COL)));
+                user.setPassword(cursor.getString(cursor.getColumnIndex(PASSWORD_COL))); // Lấy mật khẩu
                 user.setEmail(cursor.getString(cursor.getColumnIndex(EMAIL_COL)));
                 user.setPhone(cursor.getString(cursor.getColumnIndex(PHONE_COL)));
             }
-            db.close();
         } finally {
             if (cursor != null) {
                 cursor.close();
             }
         }
-
         return user;
     }
+
 }

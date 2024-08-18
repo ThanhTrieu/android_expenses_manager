@@ -33,17 +33,26 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     Toolbar toolbar;
     FragmentManager fragmentManager;
 
+    private String username, password, email, phone;  // Declare variables to store user data
+
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        // Retrieve user data from Intent
+        Intent intent = getIntent();
+        username = intent.getStringExtra("username");
+        password = intent.getStringExtra("password");
+        email = intent.getStringExtra("email");
+        phone = intent.getStringExtra("phone");
 
         fab = findViewById(R.id.fab);
         toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
         drawerLayout = findViewById(R.id.drawer_layout);
-        bottomNavigationView = findViewById(R.id.bottom_nevigation); // Initialize here
+        bottomNavigationView = findViewById(R.id.bottom_nevigation);
 
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(this, drawerLayout, toolbar, R.string.open_nav,
                 R.string.close_nav);
@@ -54,12 +63,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         navigationView.setNavigationItemSelectedListener(this);
 
         bottomNavigationView.setBackground(null);
-        getSupportFragmentManager().beginTransaction()
-                .replace(R.id.frame_layout, ReportFragment.newInstance())
-                .commit();
 
-        fragmentManager = getSupportFragmentManager();
-        openFragment(new HomeFragment());
         bottomNavigationView.setOnItemSelectedListener(new NavigationBarView.OnItemSelectedListener() {
             @Override
             public boolean onNavigationItemSelected(@NonNull MenuItem menuItem) {
@@ -75,7 +79,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                     openFragment(new BankFragment());
                     return true;
                 } else if (itemId == R.id.profile) {
-                    openFragment(new ProfileFragment());
+                    openProfileFragment();  // Use a separate method to pass data
                     return true;
                 }
                 return false;
@@ -128,11 +132,35 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 }
             });
         }
+        View budgetItem = bottomSheetDialog.findViewById(R.id.budget);
+        if (budgetItem != null) {
+            budgetItem.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    Intent intent = new Intent(MainActivity.this, AddBudgetActivity.class);
+                    startActivity(intent);
+                    bottomSheetDialog.dismiss();
+                }
+            });
+        }
 
         bottomSheetDialog.show();
     }
 
+    private void openProfileFragment() {
+        ProfileFragment profileFragment = new ProfileFragment();
 
+        // Pass user data to the fragment using a Bundle
+        Bundle bundle = new Bundle();
+        bundle.putString("username", username);
+        bundle.putString("password", password);
+        bundle.putString("email", email);
+        bundle.putString("phone", phone);
+        profileFragment.setArguments(bundle);
+
+        // Open the ProfileFragment with the passed data
+        openFragment(profileFragment);
+    }
 
     @Override
     public boolean onNavigationItemSelected(@NonNull MenuItem item) {

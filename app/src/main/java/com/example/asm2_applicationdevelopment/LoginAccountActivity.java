@@ -43,21 +43,24 @@ public class LoginAccountActivity extends AppCompatActivity {
                 String user = edtUser.getText().toString().trim();
                 String pass = edtPass.getText().toString().trim();
                 if (TextUtils.isEmpty(user)){
-                    edtUser.setError("Username can be not empty");
+                    edtUser.setError("Username cannot be empty");
                 }
                 if (TextUtils.isEmpty(pass)){
-                    edtPass.setError("Password can be not empty");
+                    edtPass.setError("Password cannot be empty");
                     return;
                 }
                 User data = userDatabase.getInfoUser(user, pass);
-                assert data != null;
-                if (data.getEmail() != null && data.getId() > 0){
-                    // thanh cong
-                    String email = data.getEmail();
-                    Toast.makeText(LoginAccountActivity.this, "Login Successful",  Toast.LENGTH_LONG).show();
-                    startActivity(new Intent(LoginAccountActivity.this, MainActivity.class));
+                if (data != null && data.getEmail() != null && data.getId() > 0){
+                    // Login successful
+                    Intent intent = new Intent(LoginAccountActivity.this, MainActivity.class);
+                    intent.putExtra("username", data.getUsername());
+                    intent.putExtra("password", pass);
+                    intent.putExtra("email", data.getEmail());
+                    intent.putExtra("phone", data.getPhone());
+                    Toast.makeText(LoginAccountActivity.this, "Login Successful", Toast.LENGTH_LONG).show();
+                    startActivity(intent);
                 } else {
-                    // dang nhap linh tinh
+                    // Login failed
                     Toast.makeText(LoginAccountActivity.this, "Account Invalid", Toast.LENGTH_SHORT).show();
                 }
             }

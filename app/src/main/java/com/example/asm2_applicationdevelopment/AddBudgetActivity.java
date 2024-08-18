@@ -1,56 +1,117 @@
 package com.example.asm2_applicationdevelopment;
 
-import android.content.Intent;
+import android.app.DatePickerDialog;
 import android.os.Bundle;
+import android.text.TextUtils;
 import android.view.View;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
+import android.widget.DatePicker;
 import android.widget.EditText;
+import android.widget.Spinner;
 import android.widget.Toast;
 
-import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.example.asm2_applicationdevelopment.DatabaseSQLite.BudgetDatabase;
 import com.example.asm2_applicationdevelopment.Model.Budget;
 
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
+import java.util.Locale;
+
 public class AddBudgetActivity extends AppCompatActivity {
 
-    private EditText etCategory;
-    private EditText etAmount;
-    private Button btnSaveBudget;
-    private Button btnCancelBudget;
+    private EditText etDescription, etStartDate, etEndDate, etAmount;
+    private Spinner spinnerCategory;
+    private Button btnSaveBudget, btnCancel;
     private BudgetDatabase budgetDatabase;
+    private Calendar calendar;
 
     @Override
-    protected void onCreate(@Nullable Bundle savedInstanceState) {
+    protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_add_budget);
 
-        // Initialize UI components
-        etCategory = findViewById(R.id.etCategory);
-        etAmount = findViewById(R.id.etAmount);
+        // Initialize the views
+        etDescription = findViewById(R.id.editTextDescription);
+        etStartDate = findViewById(R.id.editTextStartDate);
+        etEndDate = findViewById(R.id.editTextEndDate);
+        etAmount = findViewById(R.id.editTextAmount);
+        spinnerCategory = findViewById(R.id.spinnerCategory);
         btnSaveBudget = findViewById(R.id.btnSaveBudget);
-        btnCancelBudget = findViewById(R.id.btnCancelBudget);
+        btnCancel = findViewById(R.id.buttonCancel);
 
-        // Initialize database
         budgetDatabase = new BudgetDatabase(this);
 
-        // Set click listeners for buttons
-        btnSaveBudget.setOnClickListener(v -> saveBudget());
-        btnCancelBudget.setOnClickListener(v -> finish()); // Close the activity
+        ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(this,
+                R.array.expense_categories, android.R.layout.simple_spinner_item);
+        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        spinnerCategory.setAdapter(adapter);
+
+        // Initialize calendar for date picking
+        calendar = Calendar.getInstance();
+
+        // Set up date pickers
+        setUpDatePicker(etStartDate);
+        setUpDatePicker(etEndDate);
+
+        // Set the save button click listener
+        btnSaveBudget.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                saveBudget();
+            }
+        });
+
+        // Set the cancel button click listener
+        btnCancel.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                finish(); // Close the activity if cancel is clicked
+            }
+        });
+    }
+
+    private void setUpDatePicker(final EditText editText) {
+        final DatePickerDialog.OnDateSetListener dateSetListener = new DatePickerDialog.OnDateSetListener() {
+            @Override
+            public void onDateSet(DatePicker view, int year, int month, int dayOfMonth) {
+                calendar.set(Calendar.YEAR, year);
+                calendar.set(Calendar.MONTH, month);
+                calendar.set(Calendar.DAY_OF_MONTH, dayOfMonth);
+                updateDateLabel(editText);
+            }
+        };
+
+        editText.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                new DatePickerDialog(AddBudgetActivity.this, dateSetListener,
+                        calendar.get(Calendar.YEAR),
+                        calendar.get(Calendar.MONTH),
+                        calendar.get(Calendar.DAY_OF_MONTH)).show();
+            }
+        });
+    }
+
+    private void updateDateLabel(EditText editText) {
+        String format = "yyyy-MM-dd"; // Change this format according to your needs
+        SimpleDateFormat sdf = new SimpleDateFormat(format, Locale.US);
+        editText.setText(sdf.format(calendar.getTime()));
     }
 
     private void saveBudget() {
-        String category = etCategory.getText().toString().trim();
+        // Get values from the input fields
+        String description = etDescription.getText().toString().trim();
+        String category = spinnerCategory.getSelectedItem().toString();
         String amountStr = etAmount.getText().toString().trim();
+        String startDate = etStartDate.getText().toString().trim();
+        String endDate = etEndDate.getText().toString().trim();
 
-        if (category.isEmpty()) {
-            etCategory.setError("Category is required");
-            return;
-        }
-
-        if (amountStr.isEmpty()) {
-            etAmount.setError("Amount is required");
+        // Validate input
+        if (TextUtils.isEmpty(description) || TextUtils.isEmpty(startDate) || TextUtils.isEmpty(endDate) || TextUtils.isEmpty(amountStr)) {
+            Toast.makeText(this, "Please fill in all fields", Toast.LENGTH_SHORT).show();
             return;
         }
 
@@ -58,21 +119,23 @@ public class AddBudgetActivity extends AppCompatActivity {
         try {
             amount = Double.parseDouble(amountStr);
         } catch (NumberFormatException e) {
-            etAmount.setError("Invalid amount");
+            Toast.makeText(this, "Please enter a valid amount", Toast.LENGTH_SHORT).show();
             return;
         }
 
-        // Create a new Budget object
-        Budget budget = new Budget(category, amount);
-
-        // Insert the budget into the database
-        long result = budgetDatabase.addBudget(budget);
-
-        if (result > 0) {
-            Toast.makeText(this, "Budget added successfully", Toast.LENGTH_SHORT).show();
-            finish(); // Close the activity and return to the previous screen
-        } else {
-            Toast.makeText(this, "Failed to add budget", Toast.LENGTH_SHORT).show();
+        if (amount <= 0) {
+            Toast.makeText(this, "Amount must be greater than zero", Toast.LENGTH_SHORT).show();
+            return;
         }
+
+        // Validate that the budget's start and end dates are within the same month
+        // Implement your date validation logic here
+
+        // Create Budget object and save to database
+        Budget budget = new Budget(0, description, category, amount, startDate, endDate);
+        budgetDatabase.addBudget(budget);
+
+        Toast.makeText(this, "Budget added successfully", Toast.LENGTH_SHORT).show();
+        finish(); // Close the activity after saving
     }
 }

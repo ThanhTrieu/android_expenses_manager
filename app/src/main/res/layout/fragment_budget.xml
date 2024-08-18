@@ -1,23 +1,38 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="vertical"
+    android:background="#EDEDBB"
     android:padding="16dp">
 
-    <Button
-        android:id="@+id/btnAddBudget"
+    <!-- Add Budget Button -->
+    <TextView
+        android:id="@+id/tvBudget"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Add Budget"
-        android:layout_gravity="end"
-        android:layout_marginTop="40dp"
-        android:padding="12dp"/>
+        android:layout_marginTop="60dp"
+        android:text="Budget"
+        android:textColor="#F85D2C"
+        android:textSize="20sp"
+        android:textStyle="bold"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
 
+
+    <!-- Budgets RecyclerView -->
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/rvBudgets"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:layout_marginTop="16dp"/>
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="32dp"
+        android:orientation="horizontal"
+        app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/tvBudget"
+        tools:listitem="@layout/item_budget" />
 
-</LinearLayout>
+</androidx.constraintlayout.widget.ConstraintLayout>

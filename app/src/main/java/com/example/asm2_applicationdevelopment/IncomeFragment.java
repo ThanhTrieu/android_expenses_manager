@@ -52,7 +52,6 @@ public class IncomeFragment extends Fragment {
         recyclerView.setAdapter(incomeAdapter);
         LinearLayoutManager incomeLayoutManager = new LinearLayoutManager(getContext(), LinearLayoutManager.HORIZONTAL, false);
         recyclerView.setLayoutManager(incomeLayoutManager);
-        incomeAdapter = new IncomeAdapter(incomeDatabase.getAllIncomes(), this::onIncomeItemClick);
         recyclerView.setAdapter(incomeAdapter);
 
         // Add item decoration

@@ -80,7 +80,7 @@
         android:textColor="#F3256B"
         android:textSize="20sp"
         android:textStyle="bold"
-        app:layout_constraintEnd_toEndOf="@+id/tvHeaderExpense"
+        app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="@+id/tvHeaderExpense"
         app:layout_constraintTop_toBottomOf="@+id/tvHeaderExpense" />
 

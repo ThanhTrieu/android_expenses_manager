@@ -1,18 +1,28 @@
 package com.example.asm2_applicationdevelopment;
 
+import android.app.DatePickerDialog;
 import android.os.Bundle;
 import android.text.TextUtils;
 import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
+import android.widget.DatePicker;
 import android.widget.EditText;
 import android.widget.Spinner;
 import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import com.example.asm2_applicationdevelopment.DatabaseSQLite.BudgetDatabase;
 import com.example.asm2_applicationdevelopment.DatabaseSQLite.ExpenseDatabase;
+import com.example.asm2_applicationdevelopment.Model.Budget;
 import com.example.asm2_applicationdevelopment.Model.Expense;
+
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.List;
 
 public class AddExpenseActivity extends AppCompatActivity {
 
@@ -20,6 +30,7 @@ public class AddExpenseActivity extends AppCompatActivity {
     private Spinner spinnerCategory;
     private Button buttonSave, buttonCancel;
     private ExpenseDatabase expenseDatabase;
+    private BudgetDatabase budgetDatabase;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -34,14 +45,23 @@ public class AddExpenseActivity extends AppCompatActivity {
         buttonSave = findViewById(R.id.buttonSave);
         buttonCancel = findViewById(R.id.buttonCancel);
 
-        // Initialize database
+        // Initialize databases
         expenseDatabase = new ExpenseDatabase(this);
+        budgetDatabase = new BudgetDatabase(this);
 
         // Set up the category spinner
         ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(this,
                 R.array.expense_categories, android.R.layout.simple_spinner_item);
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         spinnerCategory.setAdapter(adapter);
+
+        // Set up the date picker dialog
+        editTextDate.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                showDatePicker();
+            }
+        });
 
         // Set save button click listener
         buttonSave.setOnClickListener(new View.OnClickListener() {
@@ -58,6 +78,30 @@ public class AddExpenseActivity extends AppCompatActivity {
                 finish(); // Close the activity without saving
             }
         });
+    }
+
+    private void showDatePicker() {
+        // Get current date
+        final Calendar calendar = Calendar.getInstance();
+        int year = calendar.get(Calendar.YEAR);
+        int month = calendar.get(Calendar.MONTH);
+        int day = calendar.get(Calendar.DAY_OF_MONTH);
+
+        // Create and show DatePickerDialog
+        DatePickerDialog datePickerDialog = new DatePickerDialog(
+                this,
+                new DatePickerDialog.OnDateSetListener() {
+                    @Override
+                    public void onDateSet(DatePicker view, int year, int month, int dayOfMonth) {
+                        // Set the date in the EditText
+                        calendar.set(year, month, dayOfMonth);
+                        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+                        editTextDate.setText(sdf.format(calendar.getTime()));
+                    }
+                },
+                year, month, day
+        );
+        datePickerDialog.show();
     }
 
     private void saveExpense() {
@@ -81,12 +125,29 @@ public class AddExpenseActivity extends AppCompatActivity {
             return;
         }
 
+        // Check if the expense exceeds the budget for this category
+        List<Budget> budgets = budgetDatabase.getBudgetsByCategory(category);
+        boolean budgetValid = false;
+        for (Budget budget : budgets) {
+            if (amount > budget.getAmount()) {
+                Toast.makeText(this, "Expense exceeds the budget for this category", Toast.LENGTH_SHORT).show();
+                return;
+            }
+
+            // Check if the date is within the budget's date range
+            if (isDateWithinRange(date, budget.getStartDate(), budget.getEndDate())) {
+                budgetValid = true;
+                break;
+            }
+        }
+
+        if (!budgetValid) {
+            Toast.makeText(this, "No valid budget for this expense date", Toast.LENGTH_SHORT).show();
+            return;
+        }
+
         // Create an Expense object
-        Expense expense = new Expense();
-        expense.setDescription(description);
-        expense.setDate(date);
-        expense.setAmount(amount);
-        expense.setCategory(category);
+        Expense expense = new Expense(0, description, date, amount, category);
 
         // Save to database
         long result = expenseDatabase.addExpense(expense);
@@ -98,10 +159,24 @@ public class AddExpenseActivity extends AppCompatActivity {
         }
     }
 
+    private boolean isDateWithinRange(String dateStr, String startDateStr, String endDateStr) {
+        SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
+        try {
+            Date date = dateFormat.parse(dateStr);
+            Date startDate = dateFormat.parse(startDateStr);
+            Date endDate = dateFormat.parse(endDateStr);
+            return date != null && startDate != null && endDate != null && !date.before(startDate) && !date.after(endDate);
+        } catch (ParseException e) {
+            e.printStackTrace();
+            return false;
+        }
+    }
+
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        // Close database connection when activity is destroyed
+        // Close database connections when activity is destroyed
         expenseDatabase.close();
+        budgetDatabase.close();
     }
 }

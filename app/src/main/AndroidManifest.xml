@@ -20,6 +20,7 @@
         <activity android:name=".EditIncomeActivity"/>
         <activity android:name=".AddBudgetActivity"/>
         <activity android:name=".EditBudgetActivity"/>
+        <activity android:name=".EditProfileActivity"/>
         <activity
             android:name=".LoginAccountActivity"
             android:exported="true">

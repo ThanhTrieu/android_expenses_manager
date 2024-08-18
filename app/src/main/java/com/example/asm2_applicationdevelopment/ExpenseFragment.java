@@ -57,7 +57,6 @@ public class ExpenseFragment extends Fragment {
 
         LinearLayoutManager expenseLayoutManager = new LinearLayoutManager(getContext(), LinearLayoutManager.HORIZONTAL, false);
         recyclerView.setLayoutManager(expenseLayoutManager);
-        expenseAdapter = new ExpenseAdapter(expenseDatabase.getAllExpenses(), this::onExpenseItemClick);
         int itemOffset = getResources().getDimensionPixelSize(R.dimen.item_offset); // Ensure this dimension is defined in dimens.xml
         recyclerView.addItemDecoration(new ItemOffsetDecoration(itemOffset));
 

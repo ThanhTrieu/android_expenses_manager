@@ -1,9 +1,13 @@
 package com.example.asm2_applicationdevelopment;
 
+import android.app.DatePickerDialog;
 import android.content.DialogInterface;
 import android.os.Bundle;
+import android.text.TextUtils;
+import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
+import android.widget.DatePicker;
 import android.widget.EditText;
 import android.widget.Spinner;
 import android.widget.Toast;
@@ -11,8 +15,13 @@ import android.widget.Toast;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 
+import com.example.asm2_applicationdevelopment.DatabaseSQLite.BudgetDatabase;
 import com.example.asm2_applicationdevelopment.DatabaseSQLite.ExpenseDatabase;
+import com.example.asm2_applicationdevelopment.Model.Budget;
 import com.example.asm2_applicationdevelopment.Model.Expense;
+
+import java.util.Calendar;
+import java.util.List;
 
 public class EditExpenseActivity extends AppCompatActivity {
 
@@ -20,33 +29,42 @@ public class EditExpenseActivity extends AppCompatActivity {
     private Spinner spinnerCategory;
     private Button buttonSave, buttonCancel, buttonDelete;
     private ExpenseDatabase expenseDatabase;
+    private BudgetDatabase budgetDatabase;
     private int expenseId;
+    private Calendar calendar;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_edit_expense);
 
-        // Initialize the views
+        // Initialize views
         editTextDescription = findViewById(R.id.editTextDescription);
         editTextDate = findViewById(R.id.editTextDate);
         editTextAmount = findViewById(R.id.editTextAmount);
         spinnerCategory = findViewById(R.id.spinnerCategory);
         buttonSave = findViewById(R.id.buttonSave);
         buttonCancel = findViewById(R.id.buttonCancel);
-        buttonDelete = findViewById(R.id.buttonDelete); // Ensure this ID matches your layout
+        buttonDelete = findViewById(R.id.buttonDelete);
 
-        // Initialize the database
+        // Initialize databases
         expenseDatabase = new ExpenseDatabase(this);
+        budgetDatabase = new BudgetDatabase(this);
 
-        // Populate the Spinner with categories
+        // Set up the category spinner
         ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(this,
                 R.array.expense_categories, android.R.layout.simple_spinner_item);
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         spinnerCategory.setAdapter(adapter);
 
+        // Initialize calendar for date picker
+        calendar = Calendar.getInstance();
+
+        // Set date picker dialog
+        editTextDate.setOnClickListener(v -> showDatePickerDialog());
+
         // Get the expense ID from the intent
-        expenseId = getIntent().getIntExtra("EXPENSE_ID", -1); // Use the correct intent key "EXPENSE_ID"
+        expenseId = getIntent().getIntExtra("EXPENSE_ID", -1);
 
         // Load expense data if editing
         if (expenseId != -1) {
@@ -56,7 +74,26 @@ public class EditExpenseActivity extends AppCompatActivity {
         // Set click listeners for buttons
         buttonSave.setOnClickListener(v -> saveExpense());
         buttonCancel.setOnClickListener(v -> finish());
-        buttonDelete.setOnClickListener(v -> confirmDeleteExpense()); // Handle delete with confirmation
+        buttonDelete.setOnClickListener(v -> confirmDeleteExpense());
+    }
+
+    private void showDatePickerDialog() {
+        int year = calendar.get(Calendar.YEAR);
+        int month = calendar.get(Calendar.MONTH);
+        int day = calendar.get(Calendar.DAY_OF_MONTH);
+
+        DatePickerDialog datePickerDialog = new DatePickerDialog(this,
+                (view, selectedYear, selectedMonth, selectedDay) -> {
+                    calendar.set(selectedYear, selectedMonth, selectedDay);
+                    updateDateField();
+                }, year, month, day);
+        datePickerDialog.show();
+    }
+
+    private void updateDateField() {
+        String myFormat = "yyyy-MM-dd"; // In which you need to put here
+        java.text.SimpleDateFormat sdf = new java.text.SimpleDateFormat(myFormat, java.util.Locale.getDefault());
+        editTextDate.setText(sdf.format(calendar.getTime()));
     }
 
     private void loadExpenseData(int id) {
@@ -68,9 +105,8 @@ public class EditExpenseActivity extends AppCompatActivity {
             editTextAmount.setText(String.valueOf(expense.getAmount()));
 
             // Set the correct category in the spinner
-            String category = expense.getCategory();
             ArrayAdapter<String> adapter = (ArrayAdapter<String>) spinnerCategory.getAdapter();
-            int spinnerPosition = adapter.getPosition(category);
+            int spinnerPosition = adapter.getPosition(expense.getCategory());
             if (spinnerPosition >= 0) {
                 spinnerCategory.setSelection(spinnerPosition);
             }
@@ -78,34 +114,55 @@ public class EditExpenseActivity extends AppCompatActivity {
     }
 
     private void saveExpense() {
+        // Get input data from user
         String description = editTextDescription.getText().toString().trim();
         String date = editTextDate.getText().toString().trim();
-        String amountStr = editTextAmount.getText().toString().trim();
+        String amountString = editTextAmount.getText().toString().trim();
         String category = spinnerCategory.getSelectedItem().toString();
 
-        if (description.isEmpty() || date.isEmpty() || amountStr.isEmpty() || category.isEmpty()) {
+        // Validate inputs
+        if (TextUtils.isEmpty(description) || TextUtils.isEmpty(date) || TextUtils.isEmpty(amountString)) {
             Toast.makeText(this, "Please fill in all fields", Toast.LENGTH_SHORT).show();
             return;
         }
 
         double amount;
         try {
-            amount = Double.parseDouble(amountStr);
+            amount = Double.parseDouble(amountString);
         } catch (NumberFormatException e) {
-            Toast.makeText(this, "Invalid amount format", Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, "Invalid amount", Toast.LENGTH_SHORT).show();
             return;
+        }
+
+        // Check if the updated expense exceeds the budget for this category
+        List<Budget> budgets = budgetDatabase.getBudgetsByCategory(category);
+        for (Budget budget : budgets) {
+            if (amount > budget.getAmount()) {
+                Toast.makeText(this, "Expense exceeds the budget for this category", Toast.LENGTH_SHORT).show();
+                return;
+            }
         }
 
         Expense expense = new Expense(expenseId, description, date, amount, category);
 
-        // Update the existing expense
-        int result = expenseDatabase.updateExpense(expense);
-
-        if (result > 0) {
-            Toast.makeText(this, "Expense updated successfully", Toast.LENGTH_SHORT).show();
-            finish();
+        if (expenseId == -1) {
+            // Add new expense
+            long result = expenseDatabase.addExpense(expense);
+            if (result != -1) {
+                Toast.makeText(this, "Expense added successfully", Toast.LENGTH_SHORT).show();
+                finish(); // Close the activity and go back
+            } else {
+                Toast.makeText(this, "Failed to add expense", Toast.LENGTH_SHORT).show();
+            }
         } else {
-            Toast.makeText(this, "Failed to update expense", Toast.LENGTH_SHORT).show();
+            // Update existing expense
+            int result = expenseDatabase.updateExpense(expense);
+            if (result > 0) {
+                Toast.makeText(this, "Expense updated successfully", Toast.LENGTH_SHORT).show();
+                finish();
+            } else {
+                Toast.makeText(this, "Failed to update expense", Toast.LENGTH_SHORT).show();
+            }
         }
     }
 
@@ -137,5 +194,13 @@ public class EditExpenseActivity extends AppCompatActivity {
         } else {
             Toast.makeText(this, "No expense to delete", Toast.LENGTH_SHORT).show();
         }
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        // Close database connections when activity is destroyed
+        expenseDatabase.close();
+        budgetDatabase.close();
     }
 }

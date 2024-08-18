@@ -1,55 +1,43 @@
 package com.example.asm2_applicationdevelopment.Model;
 
-import java.io.Serializable;
-
-public class Budget implements Serializable {
-
+public class Budget {
     private int id;
+    private String description;
     private String category;
     private double amount;
+    private String startDate;  // New field for start date
+    private String endDate;    // New field for end date
 
-    public Budget(int id, String category, double amount) {
+    public Budget(int id, String description, String category, double amount, String startDate, String endDate) {
         this.id = id;
+        this.description = description;
         this.category = category;
         this.amount = amount;
+        this.startDate = startDate;
+        this.endDate = endDate;
     }
 
-    public Budget(String category, double amount) {
-        this.category = category;
-        this.amount = amount;
-    }
-
-    // Getters and Setters
     public int getId() {
         return id;
     }
 
-    public void setId(int id) {
-        this.id = id;
+    public String getDescription() {
+        return description;
     }
 
     public String getCategory() {
         return category;
     }
 
-    public void setCategory(String category) {
-        this.category = category;
-    }
-
     public double getAmount() {
         return amount;
     }
 
-    public void setAmount(double amount) {
-        this.amount = amount;
+    public String getStartDate() {
+        return startDate;
     }
 
-    @Override
-    public String toString() {
-        return "Budget{" +
-                "id=" + id +
-                ", category='" + category + '\'' +
-                ", amount=" + amount +
-                '}';
+    public String getEndDate() {
+        return endDate;
     }
 }

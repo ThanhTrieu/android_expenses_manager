@@ -6,7 +6,6 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
-import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -17,8 +16,6 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.example.asm2_applicationdevelopment.Adapter.BudgetAdapter;
 import com.example.asm2_applicationdevelopment.DatabaseSQLite.BudgetDatabase;
 import com.example.asm2_applicationdevelopment.Model.Budget;
-
-import java.util.List;
 
 public class BudgetFragment extends Fragment {
 
@@ -49,19 +46,18 @@ public class BudgetFragment extends Fragment {
 
         // Initialize UI components
         recyclerView = view.findViewById(R.id.rvBudgets); // Ensure this ID matches your layout
-        btnAddBudget = view.findViewById(R.id.btnAddBudget);
 
         // Set up RecyclerView
         recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
         budgetAdapter = new BudgetAdapter(budgetDatabase.getAllBudgets(), this::onBudgetItemClick);
         recyclerView.setAdapter(budgetAdapter);
 
+        LinearLayoutManager budgetLayoutManager = new LinearLayoutManager(getContext(), LinearLayoutManager.HORIZONTAL, false);
+        recyclerView.setLayoutManager(budgetLayoutManager);
         int itemOffset = getResources().getDimensionPixelSize(R.dimen.item_offset); // Ensure this dimension is defined in dimens.xml
         recyclerView.addItemDecoration(new ItemOffsetDecoration(itemOffset));
 
         // Set click listener for add button
-        btnAddBudget.setOnClickListener(v -> navigateToAddBudget());
-
         return view;
     }
 
@@ -72,10 +68,6 @@ public class BudgetFragment extends Fragment {
         budgetAdapter.updateBudgets(budgetDatabase.getAllBudgets());
     }
 
-    private void navigateToAddBudget() {
-        Intent intent = new Intent(getActivity(), AddBudgetActivity.class);
-        startActivity(intent);
-    }
 
     private void onBudgetItemClick(Budget budget) {
         Intent intent = new Intent(getActivity(), EditBudgetActivity.class);

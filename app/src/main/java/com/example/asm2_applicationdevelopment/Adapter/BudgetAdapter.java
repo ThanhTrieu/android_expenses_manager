@@ -11,34 +11,41 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.example.asm2_applicationdevelopment.Model.Budget;
 import com.example.asm2_applicationdevelopment.R;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class BudgetAdapter extends RecyclerView.Adapter<BudgetAdapter.BudgetViewHolder> {
 
     private List<Budget> budgetList;
-    private final OnItemClickListener listener;
+    private OnItemClickListener onItemClickListener;
 
     public interface OnItemClickListener {
         void onItemClick(Budget budget);
     }
 
-    public BudgetAdapter(List<Budget> budgetList, OnItemClickListener listener) {
+    public BudgetAdapter(List<Budget> budgetList, OnItemClickListener onItemClickListener) {
         this.budgetList = budgetList;
-        this.listener = listener;
+        this.onItemClickListener = onItemClickListener;
     }
 
     @NonNull
     @Override
     public BudgetViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         View view = LayoutInflater.from(parent.getContext())
-                .inflate(R.layout.item_budget, parent, false);
+                .inflate(R.layout.item_budget, parent, false); // Ensure this layout file is used
         return new BudgetViewHolder(view);
     }
 
     @Override
     public void onBindViewHolder(@NonNull BudgetViewHolder holder, int position) {
         Budget budget = budgetList.get(position);
-        holder.bind(budget, listener);
+        holder.tvDescription.setText(budget.getDescription());
+        holder.tvCategory.setText(budget.getCategory());
+        holder.tvAmount.setText(String.valueOf(budget.getAmount()));
+        holder.tvStartDate.setText(budget.getStartDate());
+        holder.tvEndDate.setText(budget.getEndDate());
+
+        holder.itemView.setOnClickListener(v -> onItemClickListener.onItemClick(budget));
     }
 
     @Override
@@ -46,26 +53,27 @@ public class BudgetAdapter extends RecyclerView.Adapter<BudgetAdapter.BudgetView
         return budgetList.size();
     }
 
-    public void updateBudgets(List<Budget> newBudgetList) {
-        this.budgetList = newBudgetList;
+    // Method to update the list of budgets
+    public void updateBudgets(List<Budget> newBudgets) {
+        this.budgetList = new ArrayList<>(newBudgets);
         notifyDataSetChanged();
     }
 
-    static class BudgetViewHolder extends RecyclerView.ViewHolder {
+    class BudgetViewHolder extends RecyclerView.ViewHolder {
 
-        private final TextView tvCategory;
-        private final TextView tvAmount;
+        TextView tvDescription;
+        TextView tvCategory;
+        TextView tvAmount;
+        TextView tvStartDate;
+        TextView tvEndDate;
 
         public BudgetViewHolder(@NonNull View itemView) {
             super(itemView);
+            tvDescription = itemView.findViewById(R.id.tvDes);
             tvCategory = itemView.findViewById(R.id.tvCategory);
             tvAmount = itemView.findViewById(R.id.tvAmount);
-        }
-
-        public void bind(final Budget budget, final OnItemClickListener listener) {
-            tvCategory.setText(budget.getCategory());
-            tvAmount.setText(String.format("%.2f", budget.getAmount()));
-            itemView.setOnClickListener(v -> listener.onItemClick(budget));
+            tvStartDate = itemView.findViewById(R.id.tvStartDateLabel);
+            tvEndDate = itemView.findViewById(R.id.tvEndDateLabel);
         }
     }
 }
