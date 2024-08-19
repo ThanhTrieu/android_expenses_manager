@@ -15,7 +15,7 @@ import com.example.asm2_applicationdevelopment.Model.User;
 
 public class UserDatabase extends SQLiteOpenHelper {
     public static final String DB_NAME = "it0602_asm";
-    public static final int DB_VERSION = 1;
+    public static final int DB_VERSION = 2;
     public static final String TABLE_NAME = "users";
     public static final String ID_COL = "id";
     public static final String USERNAME_COL = "username";

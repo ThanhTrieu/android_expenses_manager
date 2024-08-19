@@ -29,7 +29,6 @@ public class EditIncomeActivity extends AppCompatActivity {
     private IncomeDatabase incomeDatabase;
     private int incomeId;
     private Calendar calendar;
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -126,6 +125,12 @@ public class EditIncomeActivity extends AppCompatActivity {
             amount = Double.parseDouble(amountStr);
         } catch (NumberFormatException e) {
             Toast.makeText(this, "Invalid amount format", Toast.LENGTH_SHORT).show();
+            return;
+        }
+
+        // Check if the category is already used by other income entries
+        if (incomeDatabase.isCategoryDuplicate(category, incomeId)) {
+            Toast.makeText(this, "Category already exists", Toast.LENGTH_SHORT).show();
             return;
         }
 

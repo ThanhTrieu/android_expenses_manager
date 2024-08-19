@@ -75,8 +75,8 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                     openFragment(new ReportFragment());
                     return true;
 
-                } else if (itemId == R.id.bank) {
-                    openFragment(new BankFragment());
+                } else if (itemId == R.id.budget) {
+                    openFragment(new BudgetFragment());
                     return true;
                 } else if (itemId == R.id.profile) {
                     openProfileFragment();  // Use a separate method to pass data

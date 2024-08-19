@@ -16,9 +16,9 @@
         android:title=""/>
 
     <item
-        android:id="@+id/bank"
-        android:title="@string/bank"
-        android:icon="@drawable/bank"/>
+        android:id="@+id/budget"
+        android:title="@string/budget"
+        android:icon="@drawable/budget"/>
 
     <item
         android:id="@+id/profile"

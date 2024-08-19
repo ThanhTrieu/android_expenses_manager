@@ -124,12 +124,53 @@ public class AddExpenseActivity extends AppCompatActivity {
             Toast.makeText(this, "Invalid amount", Toast.LENGTH_SHORT).show();
             return;
         }
+
+        // Check if the category exists in the BudgetDatabase
         List<Budget> budgets = budgetDatabase.getBudgetsByCategory(category);
+        if (budgets.isEmpty()) {
+            Toast.makeText(this, "Cannot create expense. The category does not exist in the budget.", Toast.LENGTH_SHORT).show();
+            return;
+        }
+
+        // Convert expense date to Date object
+        SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
+        Date expenseDate;
+        try {
+            expenseDate = dateFormat.parse(date);
+        } catch (ParseException e) {
+            Toast.makeText(this, "Invalid date format", Toast.LENGTH_SHORT).show();
+            return;
+        }
+
+        // Check if the amount exceeds the budget and the date is within the budget range
+        boolean isWithinBudget = false;
         for (Budget budget : budgets) {
+            // Convert budget start and end dates to Date objects
+            Date startDate;
+            Date endDate;
+            try {
+                startDate = dateFormat.parse(budget.getStartDate());
+                endDate = dateFormat.parse(budget.getEndDate());
+            } catch (ParseException e) {
+                continue; // Skip this budget if date parsing fails
+            }
+
+            // Check if the expense amount exceeds the budget
             if (amount > budget.getAmount()) {
                 Toast.makeText(this, "Expense exceeds the budget for this category", Toast.LENGTH_SHORT).show();
                 return;
             }
+
+            // Check if the expense date is within the budget's date range
+            if (expenseDate != null && !expenseDate.before(startDate) && !expenseDate.after(endDate)) {
+                isWithinBudget = true;
+                break;
+            }
+        }
+
+        if (!isWithinBudget) {
+            Toast.makeText(this, "Expense date is not within the budget period for this category", Toast.LENGTH_SHORT).show();
+            return;
         }
 
         // Check if the category already exists in the ExpenseDatabase

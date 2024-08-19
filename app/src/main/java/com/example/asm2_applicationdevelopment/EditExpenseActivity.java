@@ -134,15 +134,55 @@ public class EditExpenseActivity extends AppCompatActivity {
             return;
         }
 
-        // Check if the updated expense exceeds the budget for this category
+        // Check if the selected category exists in the budget database
         List<Budget> budgets = budgetDatabase.getBudgetsByCategory(category);
+        if (budgets.isEmpty()) {
+            Toast.makeText(this, "This category does not exist in the budget. You cannot edit the expense with this category.", Toast.LENGTH_LONG).show();
+            return;
+        }
+
+        // Check if the expense amount exceeds the budget and if the date is within the budget period
+        boolean isWithinBudget = false;
+
+        // Convert the expense date to a Date object
+        java.text.SimpleDateFormat dateFormat = new java.text.SimpleDateFormat("yyyy-MM-dd", java.util.Locale.getDefault());
+        java.util.Date expenseDate;
+        try {
+            expenseDate = dateFormat.parse(date);
+        } catch (java.text.ParseException e) {
+            Toast.makeText(this, "Invalid date format", Toast.LENGTH_SHORT).show();
+            return;
+        }
+
         for (Budget budget : budgets) {
+            // Convert the budget start and end dates to Date objects
+            java.util.Date startDate, endDate;
+            try {
+                startDate = dateFormat.parse(budget.getStartDate());
+                endDate = dateFormat.parse(budget.getEndDate());
+            } catch (java.text.ParseException e) {
+                continue; // Skip this budget if date parsing fails
+            }
+
+            // Check if the expense amount exceeds the budget amount
             if (amount > budget.getAmount()) {
                 Toast.makeText(this, "Expense exceeds the budget for this category", Toast.LENGTH_SHORT).show();
                 return;
             }
+
+            // Check if the expense date is within the budget's date range
+            if (expenseDate != null && !expenseDate.before(startDate) && !expenseDate.after(endDate)) {
+                isWithinBudget = true;
+                break;
+            }
         }
 
+        if (!isWithinBudget) {
+            Toast.makeText(this, "Expense date is not within the budget period for this category", Toast.LENGTH_SHORT).show();
+            return;
+        }
+
+        // Create an Expense object
         Expense expense = new Expense(expenseId, description, date, amount, category);
 
         if (expenseId == -1) {
@@ -163,7 +203,7 @@ public class EditExpenseActivity extends AppCompatActivity {
         } else {
             // Update existing expense - Check if the category exists except for the current expense
             if (expenseDatabase.expenseCategoryExistsExcept(category, expenseId)) {
-                Toast.makeText(this, "Expense with this category already exists", Toast.LENGTH_SHORT).show();
+                Toast.makeText(this, "Category already exists", Toast.LENGTH_SHORT).show();
                 return;
             }
 
