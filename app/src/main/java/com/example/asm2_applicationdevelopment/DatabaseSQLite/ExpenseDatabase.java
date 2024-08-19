@@ -1,5 +1,6 @@
 package com.example.asm2_applicationdevelopment.DatabaseSQLite;
 
+
 import android.annotation.SuppressLint;
 import android.content.ContentValues;
 import android.content.Context;
@@ -15,7 +16,7 @@ import java.util.List;
 public class ExpenseDatabase extends SQLiteOpenHelper {
 
     private static final String DB_NAME = "expense_db";
-    private static final int DB_VERSION = 1;
+    private static final int DB_VERSION = 2;
     private static final String TABLE_NAME = "expenses";
     private static final String ID_COL = "id";
     private static final String DESCRIPTION_COL = "description";
@@ -135,7 +136,6 @@ public class ExpenseDatabase extends SQLiteOpenHelper {
     }
 
 
-
     // Method to update an expense
     public int updateExpense(Expense expense) {
         SQLiteDatabase db = this.getWritableDatabase();
@@ -147,6 +147,28 @@ public class ExpenseDatabase extends SQLiteOpenHelper {
         int result = db.update(TABLE_NAME, values, ID_COL + "=?", new String[]{String.valueOf(expense.getId())});
         db.close();
         return result;
+    }
+    public boolean expenseCategoryExists(String category) {
+        SQLiteDatabase db = this.getReadableDatabase();
+        String query = "SELECT 1 FROM " + TABLE_NAME + " WHERE " + CATEGORY_COL + " = ?";
+        Cursor cursor = db.rawQuery(query, new String[]{category});
+
+        boolean exists = cursor.getCount() > 0;
+        cursor.close();
+        db.close();
+
+        return exists;
+    }
+    public boolean expenseCategoryExistsExcept(String category, int excludeId) {
+        SQLiteDatabase db = this.getReadableDatabase();
+        String query = "SELECT 1 FROM " + TABLE_NAME + " WHERE " + CATEGORY_COL + " = ? AND " + ID_COL + " != ?";
+        Cursor cursor = db.rawQuery(query, new String[]{category, String.valueOf(excludeId)});
+
+        boolean exists = cursor.getCount() > 0;
+        cursor.close();
+        db.close();
+
+        return exists;
     }
 
 

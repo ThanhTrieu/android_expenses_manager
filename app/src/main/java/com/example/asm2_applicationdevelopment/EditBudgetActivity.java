@@ -140,6 +140,23 @@ public class EditBudgetActivity extends AppCompatActivity {
             return;
         }
 
+        // Load the current budget data if editing
+        Budget currentBudget = budgetDatabase.getBudgetById(budgetId);
+        if (currentBudget == null) {
+            Toast.makeText(this, "Budget not found", Toast.LENGTH_SHORT).show();
+            return;
+        }
+
+        boolean budgetExists = false;
+        if (!category.equals(currentBudget.getCategory())) {
+            budgetExists = budgetDatabase.budgetExists(category);
+        }
+
+        if (budgetExists) {
+            Toast.makeText(this, "Budget already exists for this category", Toast.LENGTH_SHORT).show();
+            return;
+        }
+
         Budget budget = new Budget(budgetId, description, category, amount, startDate, endDate);
 
         if (budgetId == -1) {

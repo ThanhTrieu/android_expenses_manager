@@ -14,7 +14,7 @@ import java.util.List;
 public class BudgetDatabase extends SQLiteOpenHelper {
 
     private static final String DATABASE_NAME = "expense_manager.db";
-    private static final int DATABASE_VERSION = 2; // Incremented version number
+    private static final int DATABASE_VERSION = 3; // Incremented version number
 
     private static final String TABLE_BUDGET = "budget";
     private static final String COLUMN_ID = "id";
@@ -83,6 +83,7 @@ public class BudgetDatabase extends SQLiteOpenHelper {
         db.close();
         return budgets;
     }
+
     public Budget getBudgetById(int id) {
         SQLiteDatabase db = this.getReadableDatabase();
         Cursor cursor = db.query(TABLE_BUDGET, null, COLUMN_ID + " = ?", new String[]{String.valueOf(id)}, null, null, null);
@@ -104,7 +105,6 @@ public class BudgetDatabase extends SQLiteOpenHelper {
         db.close();
         return null;
     }
-
 
     public List<Budget> getBudgetsByCategory(String category) {
         List<Budget> budgets = new ArrayList<>();
@@ -136,7 +136,6 @@ public class BudgetDatabase extends SQLiteOpenHelper {
         return budgets;
     }
 
-
     public int updateBudget(Budget budget) {
         SQLiteDatabase db = this.getWritableDatabase();
         ContentValues values = new ContentValues();
@@ -149,6 +148,19 @@ public class BudgetDatabase extends SQLiteOpenHelper {
         db.close();
         return result;
     }
+
+    public boolean budgetExists(String category) {
+        SQLiteDatabase db = this.getReadableDatabase();
+        String query = "SELECT 1 FROM " + TABLE_BUDGET + " WHERE " + COLUMN_CATEGORY + " = ?";
+        Cursor cursor = db.rawQuery(query, new String[]{category});
+
+        boolean exists = cursor.getCount() > 0;
+        cursor.close();
+        db.close();
+
+        return exists;
+    }
+
 
     public int deleteBudget(int id) {
         SQLiteDatabase db = this.getWritableDatabase();

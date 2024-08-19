@@ -15,7 +15,7 @@ import java.util.List;
 public class IncomeDatabase extends SQLiteOpenHelper {
 
     private static final String DB_NAME = "income_db";
-    private static final int DB_VERSION = 1;
+    private static final int DB_VERSION = 2;
     private static final String TABLE_NAME = "incomes";
     private static final String ID_COL = "id";
     private static final String DESCRIPTION_COL = "description";
@@ -111,6 +111,47 @@ public class IncomeDatabase extends SQLiteOpenHelper {
         db.close();
         return income;
     }
+    // Method to check if an income with the same category already exists
+    public boolean isIncomeDuplicate(String category) {
+        SQLiteDatabase db = this.getReadableDatabase();
+        Cursor cursor = db.query(
+                TABLE_NAME,
+                new String[]{ID_COL},
+                CATEGORY_COL + "=?",
+                new String[]{category},
+                null,
+                null,
+                null
+        );
+
+        boolean isDuplicate = (cursor != null && cursor.getCount() > 0);
+        if (cursor != null) {
+            cursor.close();
+        }
+        db.close();
+        return isDuplicate;
+    }
+    // Method to check if the category is already used by other income entries
+    public boolean isCategoryDuplicate(String category, int excludeId) {
+        SQLiteDatabase db = this.getReadableDatabase();
+        Cursor cursor = db.query(
+                TABLE_NAME,
+                new String[]{ID_COL},
+                CATEGORY_COL + "=? AND " + ID_COL + "!=?",
+                new String[]{category, String.valueOf(excludeId)},
+                null,
+                null,
+                null
+        );
+
+        boolean isDuplicate = (cursor != null && cursor.getCount() > 0);
+        if (cursor != null) {
+            cursor.close();
+        }
+        db.close();
+        return isDuplicate;
+    }
+
 
     // Method to get all incomes
     public List<Income> getAllIncomes() {

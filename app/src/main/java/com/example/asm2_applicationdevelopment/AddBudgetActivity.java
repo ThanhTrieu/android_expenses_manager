@@ -128,8 +128,12 @@ public class AddBudgetActivity extends AppCompatActivity {
             return;
         }
 
-        // Validate that the budget's start and end dates are within the same month
-        // Implement your date validation logic here
+        // Check if a budget with the same description, category, and date range already exists
+        boolean budgetExists = budgetDatabase.budgetExists(category);
+        if (budgetExists) {
+            Toast.makeText(this, "Budget already exists for this category", Toast.LENGTH_SHORT).show();
+            return;
+        }
 
         // Create Budget object and save to database
         Budget budget = new Budget(0, description, category, amount, startDate, endDate);

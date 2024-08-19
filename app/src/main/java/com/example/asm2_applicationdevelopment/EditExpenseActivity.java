@@ -146,6 +146,12 @@ public class EditExpenseActivity extends AppCompatActivity {
         Expense expense = new Expense(expenseId, description, date, amount, category);
 
         if (expenseId == -1) {
+            // New expense - Check if an expense with the same category already exists
+            if (expenseDatabase.expenseCategoryExists(category)) {
+                Toast.makeText(this, "Expense with this category already exists", Toast.LENGTH_SHORT).show();
+                return;
+            }
+
             // Add new expense
             long result = expenseDatabase.addExpense(expense);
             if (result != -1) {
@@ -155,6 +161,12 @@ public class EditExpenseActivity extends AppCompatActivity {
                 Toast.makeText(this, "Failed to add expense", Toast.LENGTH_SHORT).show();
             }
         } else {
+            // Update existing expense - Check if the category exists except for the current expense
+            if (expenseDatabase.expenseCategoryExistsExcept(category, expenseId)) {
+                Toast.makeText(this, "Expense with this category already exists", Toast.LENGTH_SHORT).show();
+                return;
+            }
+
             // Update existing expense
             int result = expenseDatabase.updateExpense(expense);
             if (result > 0) {

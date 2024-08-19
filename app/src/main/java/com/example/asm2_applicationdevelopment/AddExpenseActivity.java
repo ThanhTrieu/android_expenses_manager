@@ -124,25 +124,17 @@ public class AddExpenseActivity extends AppCompatActivity {
             Toast.makeText(this, "Invalid amount", Toast.LENGTH_SHORT).show();
             return;
         }
-
-        // Check if the expense exceeds the budget for this category
         List<Budget> budgets = budgetDatabase.getBudgetsByCategory(category);
-        boolean budgetValid = false;
         for (Budget budget : budgets) {
             if (amount > budget.getAmount()) {
                 Toast.makeText(this, "Expense exceeds the budget for this category", Toast.LENGTH_SHORT).show();
                 return;
             }
-
-            // Check if the date is within the budget's date range
-            if (isDateWithinRange(date, budget.getStartDate(), budget.getEndDate())) {
-                budgetValid = true;
-                break;
-            }
         }
 
-        if (!budgetValid) {
-            Toast.makeText(this, "No valid budget for this expense date", Toast.LENGTH_SHORT).show();
+        // Check if the category already exists in the ExpenseDatabase
+        if (expenseDatabase.expenseCategoryExists(category)) {
+            Toast.makeText(this, "Expense already exists for this category", Toast.LENGTH_SHORT).show();
             return;
         }
 

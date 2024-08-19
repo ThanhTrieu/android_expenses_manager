@@ -103,6 +103,12 @@ public class AddIncomeActivity extends AppCompatActivity {
             return;
         }
 
+        // Check if the income with the same category already exists
+        if (incomeDatabase.isIncomeDuplicate(category)) {
+            Toast.makeText(this, "Category already exists", Toast.LENGTH_SHORT).show();
+            return;
+        }
+
         // Create an Income object
         Income income = new Income();
         income.setDescription(description);
