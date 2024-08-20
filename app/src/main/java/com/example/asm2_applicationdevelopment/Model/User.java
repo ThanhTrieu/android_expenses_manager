@@ -6,7 +6,7 @@ public class User {
         public String password;
         public String email;
         public String phone;
-        private String profileImageUri; // Thêm trường này
+        private String profileImagePath; // Thêm trường này
 
         public void setId(int id) {
             this.id = id;
@@ -14,14 +14,14 @@ public class User {
         public void setUsername(String username) {
             this.username = username;
         }
+    public String getProfileImagePath() {
+        return profileImagePath;
+    }
 
-        public String getProfileImageUri() {
-        return profileImageUri;
-        }
+    public void setProfileImagePath(String profileImagePath) {
+        this.profileImagePath = profileImagePath;
+    }
 
-        public void setProfileImageUri(String profileImageUri) {
-        this.profileImageUri = profileImageUri;
-        }
         public void setPassword(String password) {
             this.password = password;
         }

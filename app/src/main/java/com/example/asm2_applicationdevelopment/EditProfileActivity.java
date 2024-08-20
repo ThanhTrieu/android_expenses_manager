@@ -102,7 +102,7 @@ public class EditProfileActivity extends AppCompatActivity {
     @Override
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-        if (resultCode == RESULT_OK && data != null) {
+        if (requestCode == PICK_IMAGE_REQUEST && resultCode == RESULT_OK && data != null) {
             selectedImageUri = data.getData();
             imgProfile.setImageURI(selectedImageUri);
         }
@@ -139,7 +139,14 @@ public class EditProfileActivity extends AppCompatActivity {
             }
 
             Toast.makeText(this, "Profile updated successfully", Toast.LENGTH_SHORT).show();
-            currentUsername = username; // Update current username if changed
+
+            // Return updated data to ProfileFragment
+            Intent resultIntent = new Intent();
+            resultIntent.putExtra("username", username);
+            resultIntent.putExtra("password", password);
+            resultIntent.putExtra("email", email);
+            resultIntent.putExtra("phone", phone);
+            setResult(RESULT_OK, resultIntent);
             finish();
         } else {
             Toast.makeText(this, "Failed to update profile", Toast.LENGTH_SHORT).show();
@@ -147,3 +154,4 @@ public class EditProfileActivity extends AppCompatActivity {
         db.close();
     }
 }
+

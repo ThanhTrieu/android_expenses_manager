@@ -1,5 +1,7 @@
 package com.example.asm2_applicationdevelopment;
 
+import static android.app.Activity.RESULT_OK;
+
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.net.Uri;
@@ -65,13 +67,7 @@ public class ProfileFragment extends Fragment {
         return view;
     }
 
-    @Override
-    public void onResume() {
-        super.onResume();
-        if (currentUsername != null) {
-            loadUserInfo(currentUsername); // Reload user info when fragment resumes
-        }
-    }
+
 
     private void loadUserInfo(String username) {
         User user = userDatabase.getInfoUser(username, null); // Get user data from database
@@ -88,14 +84,9 @@ public class ProfileFragment extends Fragment {
                 Uri imageUri = Uri.parse(imageUriString);
                 imgProfile.setImageURI(imageUri);
             }
-        } else {
-            tvUsername.setText("N/A");
-            tvPass.setText("N/A");
-            tvEmail.setText("N/A");
-            tvPhone.setText("N/A");
         }
     }
-
+    // Cập nhật ProfileFragment để khởi động EditProfileActivity với startActivityForResult
     private void openEditProfileActivity() {
         Intent intent = new Intent(getActivity(), EditProfileActivity.class);
         String username = tvUsername.getText().toString();
@@ -103,16 +94,41 @@ public class ProfileFragment extends Fragment {
         String email = tvEmail.getText().toString();
         String phone = tvPhone.getText().toString();
 
-        // Log values
-        Log.d("ProfileFragment", "Username: " + username);
-        Log.d("ProfileFragment", "Password: " + password);
-        Log.d("ProfileFragment", "Email: " + email);
-        Log.d("ProfileFragment", "Phone: " + phone);
-
         intent.putExtra("username", username);
         intent.putExtra("password", password);
         intent.putExtra("email", email);
         intent.putExtra("phone", phone);
-        startActivity(intent);
+
+        // Khởi động activity với mã yêu cầu
+        startActivityForResult(intent, 1);
+    }
+
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if (requestCode == 1 && resultCode == RESULT_OK && data != null) {
+            // Lấy thông tin mới từ Intent và cập nhật UI
+            String newUsername = data.getStringExtra("username");
+            String newPassword = data.getStringExtra("password");
+            String newEmail = data.getStringExtra("email");
+            String newPhone = data.getStringExtra("phone");
+
+            if (newUsername != null) {
+                tvUsername.setText(newUsername);
+                tvPass.setText(newPassword);
+                tvEmail.setText(newEmail);
+                tvPhone.setText(newPhone);
+
+                // Tải lại thông tin người dùng
+                loadUserInfo(newUsername);
+            }
+        }
+    }
+    @Override
+    public void onResume() {
+        super.onResume();
+        if (currentUsername != null) {
+            loadUserInfo(currentUsername); // Reload user info when fragment resumes
+        }
     }
 }
