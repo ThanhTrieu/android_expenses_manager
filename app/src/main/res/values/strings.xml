@@ -38,6 +38,7 @@
     <string name="add_new_expense">Add New Expense</string>
     <string name="edit_expense">Edit Expense</string>
     <string name="date">Date</string>
+    <string name="todo">TODO</string>
     <string-array name="expense_categories">
         <item>Food</item>
         <item>Transportation</item>

@@ -9,32 +9,24 @@
     android:fitsSystemWindows="true"
     tools:openDrawer="start"
     tools:context=".MainActivity">
-
     <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent">
-
         <androidx.appcompat.widget.Toolbar
             android:layout_width="match_parent"
             android:layout_height="?actionBarSize"
             android:id="@+id/toolbar"
             android:elevation="4dp"
             android:background="#F67418"/>
-
         <FrameLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:id="@+id/frame_layout"
             />
-
         <androidx.coordinatorlayout.widget.CoordinatorLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:theme="@style/Theme.BottomNavigationDemo"
-            >
-
-
-
+            android:theme="@style/Theme.BottomNavigationDemo">
             <com.google.android.material.bottomappbar.BottomAppBar
                 android:id="@+id/bottomAppBar"
                 android:layout_width="match_parent"
@@ -43,34 +35,27 @@
                 android:background="@color/white"
                 app:fabCradleMargin="10dp"
                 app:fabCradleRoundedCornerRadius="50dp">
-
                 <com.google.android.material.bottomnavigation.BottomNavigationView
                     android:id="@+id/bottom_nevigation"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginEnd="20dp"
-
                     android:background="@android:color/transparent"
                     app:labelVisibilityMode="labeled"
                     app:menu="@menu/bottom_menu" />
-
             </com.google.android.material.bottomappbar.BottomAppBar>
-
             <com.google.android.material.floatingactionbutton.FloatingActionButton
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:backgroundTint="@color/white"
+                android:contentDescription="@string/todo"
                 android:src="@drawable/add"
                 app:layout_anchor="@id/bottomAppBar"
                 app:maxImageSize="40dp"
                 android:id="@+id/fab"
                 app:tint="@color/lavender" />
-
         </androidx.coordinatorlayout.widget.CoordinatorLayout>
-
     </RelativeLayout>
-
-
     <com.google.android.material.navigation.NavigationView
         android:id="@+id/nav_view"
         android:layout_width="wrap_content"
@@ -79,7 +64,6 @@
         app:headerLayout="@layout/nav_header"
         app:itemTextColor="#5C2AB5"
         app:itemIconTint="#3D0B97"
-        app:menu="@menu/nevigation_menu"
+        app:menu="@menu/navigation_menu"
         android:theme="@style/Theme.BottomNavigationDemo" />
-
 </androidx.drawerlayout.widget.DrawerLayout>
